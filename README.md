@@ -1,0 +1,2 @@
+CMarket (Community Market) is a web application designed to facilitate peer-to-peer buying and selling within defined communities — such as university campuses, residential complexes, or organizations.
+Instead of relying on generic marketplaces, CMarket connects people who already share a common space or affiliation, making transactions more trustworthy, local, and relevant. Members of a community (e.g., students at Anáhuac Cancún) can list products, browse listings from peers, and coordinate exchanges — all within their own closed community environment.

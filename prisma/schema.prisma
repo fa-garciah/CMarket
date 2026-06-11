@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  idusuario     Int            @id @default(autoincrement())
+  nombre        String         @db.VarChar(100)
+  correo        String         @unique @db.VarChar(225)
+  telefono      String         @db.VarChar(75)
+  contrasena    String         @db.VarChar(255)
+  fecharegistro DateTime       @default(now())
+  isactive      Int            @db.SmallInt
+  fotousuario   Bytes?
+  verifytoken   String?        @db.VarChar(255)
+  verifytokenexpiry DateTime?
+  productos     Producto[]
+  compras       Transaccion[]  @relation("Comprador")
+  ventas        Transaccion[]  @relation("Vendedor")
+
+  @@map("usuarios")
+}
+
+model Producto {
+  idproducto       Int            @id @default(autoincrement())
+  idusuario        Int
+  idcategoria      Int
+  iddisponibilidad Int
+  nombreproducto   String         @db.VarChar(100)
+  descripcion      String?
+  precio           Decimal        @db.Decimal(10, 2)
+  stock            Int
+  fechapublicacion DateTime       @default(now())
+  isactive         Int            @db.SmallInt
+  fotoproducto     Bytes?
+  fotourl          String?        @db.VarChar(500)
+  vendedor         Usuario        @relation(fields: [idusuario], references: [idusuario])
+  categoria        Categoria      @relation(fields: [idcategoria], references: [idcategoria])
+  disponibilidad   Disponibilidad @relation(fields: [iddisponibilidad], references: [iddisponibilidad])
+  transacciones    Transaccion[]
+
+  @@map("producto")
+}
+
+model Categoria {
+  idcategoria     Int        @id @default(autoincrement())
+  nombrecategoria String     @db.VarChar(50)
+  productos       Producto[]
+
+  @@map("categorias")
+}
+
+model Disponibilidad {
+  iddisponibilidad     Int        @id @default(autoincrement())
+  nombredisponibilidad String     @db.VarChar(50)
+  productos            Producto[]
+
+  @@map("disponibilidad")
+}
+
+model MetodoPago {
+  idmetodopago     Int           @id @default(autoincrement())
+  nombremetodopago String        @db.VarChar(50)
+  transacciones    Transaccion[]
+
+  @@map("metodopago")
+}
+
+model EstadoTransaccion {
+  idestado      Int           @id @default(autoincrement())
+  estado        String        @db.VarChar(50)
+  transacciones Transaccion[]
+
+  @@map("estadotransaccion")
+}
+
+model Transaccion {
+  idtransaccion    Int               @id @default(autoincrement())
+  idcomprador      Int
+  idvendedor       Int
+  idproducto       Int
+  idestado         Int
+  idmetodopago     Int
+  cantidad         Int
+  preciototal      Decimal           @db.Decimal(10, 2)
+  fechatransaccion DateTime          @default(now())
+  isactive         Int               @db.SmallInt
+  comprador        Usuario           @relation("Comprador", fields: [idcomprador], references: [idusuario])
+  vendedor         Usuario           @relation("Vendedor", fields: [idvendedor], references: [idusuario])
+  producto         Producto          @relation(fields: [idproducto], references: [idproducto])
+  estado           EstadoTransaccion @relation(fields: [idestado], references: [idestado])
+  metodopago       MetodoPago        @relation(fields: [idmetodopago], references: [idmetodopago])
+  valoraciones     Valoracion[]
+
+  @@map("transacciones")
+}
+
+model Valoracion {
+  idvaloracion   Int         @id @default(autoincrement())
+  idtransaccion  Int
+  calificacion   Int
+  comentario     String
+  fechavaloracion DateTime   @default(now())
+  transaccion    Transaccion @relation(fields: [idtransaccion], references: [idtransaccion])
+
+  @@map("valoraciones")
+}
