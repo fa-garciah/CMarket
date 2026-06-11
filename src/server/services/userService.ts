@@ -11,7 +11,8 @@ export async function registerUser(data: RegisterInput) {
     return { error: parsed.error.issues[0].message };
   }
   console.log("verifyUrl")
-  const { nombre, correo, telefono, contrasena } = parsed.data;
+  const { nombre, telefono, contrasena } = parsed.data;
+  const correo = parsed.data.correo.trim().toLowerCase();
 
   const exist = await prisma.usuario.findUnique({ where: { correo } });
   if (exist) return { error: "El correo ya esta registrado" };
@@ -52,7 +53,8 @@ export async function verifyEmail(token: string) {
 }
 
 export async function resendVerificationEmail(correo: string) {
-  const usuario = await prisma.usuario.findUnique({ where: { correo } })
+  const normalizedCorreo = correo.trim().toLowerCase()
+  const usuario = await prisma.usuario.findUnique({ where: { correo: normalizedCorreo } })
   if (!usuario) return { error: "correo-no-encontrado" }
   if (usuario.isactive === 1) return { error: "ya-verificado" }
   
@@ -60,23 +62,31 @@ export async function resendVerificationEmail(correo: string) {
   const verifytokenexpiry = new Date(Date.now() + 24 * 60 * 60 * 1000)
 
   await prisma.usuario.update({
-    where: { correo },
+    where: { correo: normalizedCorreo },
     data: { verifytoken, verifytokenexpiry }
   })
 
-  await sendVerificationEmail(correo, verifytoken)
+  await sendVerificationEmail(normalizedCorreo, verifytoken)
   return { ok: true }
 }
 
 export async function getUsersByEmail(correo: string) {
-  return prisma.usuario.findUnique({ where: { correo } });
+  return prisma.usuario.findUnique({ where: { correo: correo.trim().toLowerCase() } });
 }
 
 export async function checkUserVerified(correo: string) {
-  const usuario = await prisma.usuario.findUnique({ where: { correo } })
+  const usuario = await prisma.usuario.findUnique({ where: { correo: correo.trim().toLowerCase() } })
   if (!usuario) return { status: "not-found" }
   if (usuario.isactive === 0) return { status: "not-verified" }
   return { status: "ok" }
+}
+
+export async function setUserPasswordHash(idusuario: number, plainPassword: string) {
+  const hashedPassword = await bcrypt.hash(plainPassword, 12)
+  await prisma.usuario.update({
+    where: { idusuario },
+    data: { contrasena: hashedPassword }
+  })
 }
 
 export async function getUserById(id: number) {

@@ -24,8 +24,16 @@ function LoginContent() {
   const errorParam = searchParams.get("error");
 
   const onSubmit = handleSubmit(async (data) =>{
+    setServerError(null)
+
     const check = await checkUserVerifiedAction(data.email);
+    if (check.status === "not-found") {
+      setServerError("No existe una cuenta con ese correo")
+      return;
+    }
+
     if (check.status === "not-verified") {
+      setServerError("Tu cuenta no esta verificada. Te enviamos a verificacion de correo")
       router.push(`/verificar-correo?email=${encodeURIComponent(data.email)}`);
       return;
     }
@@ -38,10 +46,11 @@ function LoginContent() {
 
     if (resp?.error) {
       if (resp.error === "no-verificado") {
+        setServerError("Tu cuenta no esta verificada. Te enviamos a verificacion de correo")
         router.push(`/verificar-correo?email=${encodeURIComponent(data.email)}`);
         return;
       }
-      setServerError("Correo o contraseña incorrectos");
+      setServerError("Contrasena incorrecta");
     } else {
       router.push("/");
     }
