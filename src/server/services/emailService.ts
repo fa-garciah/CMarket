@@ -2,11 +2,16 @@ import { Resend } from "resend"
 
 export async function sendVerificationEmail(correo: string, token: string) {
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify?token=${token}`
+  const baseUrl = process.env.NEXTAUTH_URL ?? process.env.AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL
+  if (!baseUrl) {
+    throw new Error("Falta NEXTAUTH_URL, AUTH_URL o NEXT_PUBLIC_APP_URL para construir el link de verificacion")
+  }
+
+  const verifyUrl = `${baseUrl}/api/auth/verify?token=${token}`
 
   await resend.emails.send({
     from: "CMarket <onboarding@anahuarket.cosmic-chimps.com>",
-    to: "correo",
+    to: correo,
     subject: "Verifica tu cuenta de CMarket",
     html: `
       <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
