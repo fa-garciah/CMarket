@@ -2,7 +2,6 @@
 
 import { registerUserAction } from "@/features/auth/actions";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -49,71 +48,11 @@ export default function RegisterPage() {
             <section className="relative mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center justify-center">
                 <div className="grid w-full overflow-hidden rounded-[28px] border border-white/20 bg-[#231f39]/90 shadow-[0_40px_120px_rgba(10,10,30,0.45)] backdrop-blur md:grid-cols-[1.03fr_1fr]">
                     <aside className="relative hidden min-h-[700px] p-6 md:flex md:flex-col">
-                        <div className="relative flex h-full flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(145deg,#17142b_0%,#241d3d_45%,#161126_100%)] p-7 shadow-[0_35px_90px_rgba(10,10,30,0.45)]">
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(167,139,250,0.18),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.14),transparent_28%)]" />
-                            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/20 to-transparent" />
-
-                            <div className="relative z-10 flex h-full flex-col justify-between gap-6">
-                                <div className="space-y-6">
-                                    <div className="flex items-center gap-4 text-white">
-                                        <Image
-                                            src="/Logo.png"
-                                            alt="CMarket logo"
-                                            width={64}
-                                            height={64}
-                                            priority
-                                            className="h-14 w-14 rounded-2xl object-contain shadow-[0_12px_30px_rgba(15,23,42,0.35)]"
-                                        />
-                                        <div>
-                                            <p className="text-xs uppercase tracking-[0.35em] text-indigo-200/80">CMARKET</p>
-                                            <h2 className="mt-1 text-2xl font-semibold tracking-tight">Tu marketplace favorito</h2>
-                                        </div>
-                                    </div>
-
-                                    <div className="rounded-[24px] border border-white/10 bg-white/6 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.25)] backdrop-blur-sm">
-                                        <p className="text-xs uppercase tracking-[0.35em] text-indigo-100/80">Crea tu cuenta</p>
-                                        <h3 className="mt-3 text-3xl font-semibold tracking-tight text-white">Empieza a vender y descubrir.</h3>
-                                        <p className="mt-3 text-sm leading-6 text-slate-200/95">Regístrate en minutos y forma parte de una comunidad universitaria más cercana y activa.</p>
-                                    </div>
-                                </div>
-
-                                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
-                                    {[
-                                        ['Registro simple', 'Completa tus datos y crea tu cuenta sin complicaciones.'],
-                                        ['Productos reales', 'Encuentra artículos y servicios que realmente interesan a la comunidad.'],
-                                        ['Práctico', 'Gestiona tu perfil y tus publicaciones con una experiencia clara.'],
-                                        ['Conectado', 'Haz crecer tus oportunidades de compra y venta desde un solo lugar.'],
-                                    ].map(([title, text]) => (
-                                        <article
-                                            key={title}
-                                            className="rounded-[22px] border border-white/10 bg-white/6 p-4 text-left shadow-[0_18px_45px_rgba(15,23,42,0.25)] backdrop-blur-sm"
-                                        >
-                                            <p className="text-sm font-semibold text-white">{title}</p>
-                                            <p className="mt-2 text-xs leading-5 text-slate-200/90">{text}</p>
-                                        </article>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
+                        <div className="h-full rounded-2xl border border-white/10 bg-[#17142b]" />
                     </aside>
 
                     <div className="flex min-h-[700px] items-center p-6 sm:p-10 lg:p-12">
                         <div className="w-full">
-                            <div className="mb-6 flex items-center gap-3 sm:hidden">
-                                <Image
-                                    src="/Logo.png"
-                                    alt="CMarket logo"
-                                    width={44}
-                                    height={44}
-                                    priority
-                                    className="h-11 w-11 rounded-xl object-contain"
-                                />
-                                <div>
-                                    <p className="text-xs uppercase tracking-[0.35em] text-indigo-200/80">CMARKET</p>
-                                    <p className="text-sm text-slate-200">Crea tu cuenta en segundos</p>
-                                </div>
-                            </div>
-
                             <div className="mb-8">
                                 <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">Crea una cuenta</h1>
                                 <p className="mt-3 text-sm text-slate-300">
