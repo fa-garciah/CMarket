@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   title: "CMarket",
   description: "Marketplace comunitario de CMarket",
   manifest: "/manifest.json",
+  themeColor: "#231f39",
   icons: {
     icon: [
-      { url: "/icons/favicon-96x96.png", sizes: "96x96", type: "image/png" },
-      { url: "/icons/favicon.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
     ],
-    shortcut: "/icons/favicon.ico",
-    apple: "/icons/apple-touch-icon.png",
+    apple: "/icons/icon-152x152.png",
   },
 };
 
