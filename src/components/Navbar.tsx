@@ -19,22 +19,23 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white border-b border-gray-200 px-6 py-3">
-      <ul className="flex gap-8 justify-start md:justify-center overflow-x-auto scrollbar-hide">
+    <nav className="border-b border-white/10 bg-[#231f39]/80 px-6 py-4 shadow-[0_8px_30px_rgba(10,10,30,0.22)] backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center gap-3 overflow-x-auto pb-1">
         {CATEGORIAS.map(cat => (
-          <li
+          <button
             key={cat}
+            type="button"
             onClick={() => handleCategoria(cat)}
-            className={`cursor-pointer uppercase tracking-wide text-xs font-semibold transition-colors whitespace-nowrap
+            className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] whitespace-nowrap transition-all
               ${activeCategory === cat
-                ? "text-[#FF6B00] border-b-2 border-[#FF6B00] pb-1"
-                : "text-gray-500 hover:text-[#FF6B00]"
+                ? "border-indigo-300/70 bg-indigo-400/15 text-indigo-100 shadow-[0_12px_30px_rgba(129,140,248,0.18)]"
+                : "border-white/10 bg-white/6 text-slate-200 hover:border-indigo-300/60 hover:bg-white/10 hover:text-white"
               }`}
           >
             {cat}
-          </li>
+          </button>
         ))}
-      </ul>
+      </div>
     </nav>
   )
 }

@@ -17,9 +17,11 @@ export default async function EditarPerfilPage({
   const usuario = await getUserById(Number(session?.user?.id))
 
   return (
-    <main className="flex-grow max-w-2xl mx-auto w-full px-6 py-10">
-      <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-        <h1 className="text-2xl font-black text-gray-800 mb-8">EDITAR PERFIL</h1>
+    <main className="relative mx-auto flex min-h-screen w-full max-w-2xl flex-grow px-4 py-8 sm:px-6 lg:px-8">
+      <div className="w-full rounded-[28px] border border-white/10 bg-[#231f39]/90 p-8 shadow-[0_30px_90px_rgba(10,10,30,0.35)] backdrop-blur-xl">
+        <p className="text-xs uppercase tracking-[0.35em] text-indigo-100/80">Perfil</p>
+        <h1 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl">Editar perfil</h1>
+        <p className="mt-3 text-sm text-slate-200/95">Actualiza tus datos con el mismo estilo visual que el resto de la plataforma.</p>
         <EditUserForm
           defaultNombre={usuario?.nombre || ""}
           defaultTelefono={usuario?.telefono || ""}

@@ -48,11 +48,11 @@ export default function ProductForm({ categorias, disponibilidades, userId }: Pr
   })
 
   return (
-    <form onSubmit={onSubmitHandler} className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+    <form onSubmit={onSubmitHandler} className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.02fr_1fr]">
 
       {/* Imagen */}
-      <div className="space-y-4">
-        <label className="block text-sm font-black text-gray-400 uppercase tracking-widest ml-1">
+      <div className="space-y-4 rounded-[28px] border border-white/10 bg-[#231f39]/90 p-6 shadow-[0_30px_90px_rgba(10,10,30,0.35)] backdrop-blur-xl sm:p-8">
+        <label className="ml-1 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">
           Imagen del Producto
         </label>
         <CldUploadWidget
@@ -68,18 +68,18 @@ export default function ProductForm({ categorias, disponibilidades, userId }: Pr
           {({ open }) => (
             <div
               onClick={() => open()}
-              className="relative group aspect-square bg-white border-4 border-dashed border-gray-100 rounded-[3rem] overflow-hidden flex flex-col items-center justify-center transition-all hover:border-[#FF6B00]/30 cursor-pointer"
+              className="group relative flex aspect-square cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[28px] border border-dashed border-white/15 bg-white/6 transition-all hover:border-indigo-300/70 hover:bg-white/10"
             >
               {imagePreview ? (
                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
               ) : (
-                <div className="text-center p-10">
-                  <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-gray-300">
+                <div className="p-10 text-center">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/8 text-indigo-100/90">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <p className="text-gray-400 font-bold text-sm">Haz clic para subir una foto</p>
+                  <p className="text-sm font-semibold text-slate-100">Haz clic para subir una foto</p>
                 </div>
               )}
             </div>
@@ -88,14 +88,14 @@ export default function ProductForm({ categorias, disponibilidades, userId }: Pr
       </div>
 
       {/* Campos */}
-      <div className="bg-white p-10 rounded-[3rem] shadow-2xl border border-gray-100 space-y-6">
+      <div className="space-y-6 rounded-[28px] border border-white/10 bg-[#231f39]/90 p-8 shadow-[0_30px_90px_rgba(10,10,30,0.35)] backdrop-blur-xl sm:p-10">
         <div>
-          <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Nombre</label>
+          <label className="mb-2 ml-1 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">Nombre</label>
           <input
             type="text"
             placeholder="Ej. Bata de Laboratorio"
             {...register("nombreproducto")}
-            className="w-full px-5 py-4 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:bg-white focus:border-[#FF6B00] outline-none transition-all text-gray-800"
+            className="w-full rounded-xl border border-white/15 bg-white/8 px-5 py-4 text-sm text-white outline-none transition placeholder:text-slate-400 focus:border-indigo-300/70 focus:bg-white/12"
           />
           {errors.nombreproducto && (
             <p className="text-red-500 text-xs mt-1 ml-1">{errors.nombreproducto.message}</p>
@@ -103,11 +103,11 @@ export default function ProductForm({ categorias, disponibilidades, userId }: Pr
         </div>
 
         <div>
-          <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Descripción</label>
+          <label className="mb-2 ml-1 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">Descripción</label>
           <textarea
             placeholder="Estado del producto, lugar de entrega..."
             {...register("descripcion")}
-            className="w-full px-5 py-4 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:bg-white focus:border-[#FF6B00] outline-none transition-all h-24 resize-none text-gray-800"
+            className="h-24 w-full resize-none rounded-xl border border-white/15 bg-white/8 px-5 py-4 text-sm text-white outline-none transition placeholder:text-slate-400 focus:border-indigo-300/70 focus:bg-white/12"
           />
           {errors.descripcion && (
             <p className="text-red-500 text-xs mt-1 ml-1">{errors.descripcion.message}</p>
@@ -116,7 +116,7 @@ export default function ProductForm({ categorias, disponibilidades, userId }: Pr
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Categoría</label>
+            <label className="mb-2 ml-1 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">Categoría</label>
             <select
               {...register("idcategoria", { valueAsNumber: true })}
               className="w-full px-5 py-4 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:border-[#FF6B00] outline-none appearance-none text-gray-800"
@@ -130,7 +130,7 @@ export default function ProductForm({ categorias, disponibilidades, userId }: Pr
               <p className="text-red-500 text-xs mt-1 ml-1">{errors.idcategoria.message}</p>
             )}
 
-            <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1 mt-4">Disponibilidad</label>
+            <label className="mb-2 ml-1 mt-4 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">Disponibilidad</label>
             <select
               {...register("iddisponibilidad", { valueAsNumber: true  })}
               className="w-full px-5 py-4 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:border-[#FF6B00] outline-none appearance-none text-gray-800"
@@ -146,7 +146,7 @@ export default function ProductForm({ categorias, disponibilidades, userId }: Pr
           </div>
 
           <div>
-            <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Precio ($)</label>
+            <label className="mb-2 ml-1 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">Precio ($)</label>
             <input
               type="number"
               {...register("precio", { valueAsNumber: true })}
@@ -158,7 +158,7 @@ export default function ProductForm({ categorias, disponibilidades, userId }: Pr
               <p className="text-red-500 text-xs mt-1 ml-1">{errors.precio.message}</p>
             )}
 
-            <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1 mt-4">Stock</label>
+            <label className="mb-2 ml-1 mt-4 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">Stock</label>
             <input
               type="number"
               {...register("stock", { valueAsNumber: true })}
@@ -176,14 +176,14 @@ export default function ProductForm({ categorias, disponibilidades, userId }: Pr
           <button
             type="button"
             onClick={() => router.back()}
-            className="flex-1 py-4 bg-white border-2 border-gray-100 text-gray-400 font-black rounded-2xl hover:bg-gray-50 transition-all"
+            className="flex-1 rounded-xl border border-white/15 bg-white/8 py-4 font-semibold text-slate-100 transition hover:bg-white/10"
           >
             CANCELAR
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 py-4 bg-[#FF6B00] text-white font-black rounded-2xl shadow-xl shadow-orange-200 hover:bg-[#e66000] transition-all transform hover:scale-[1.02] disabled:opacity-50"
+            className="flex-1 rounded-xl bg-indigo-500 py-4 font-semibold text-white shadow-[0_18px_45px_rgba(88,80,160,0.35)] transition hover:bg-indigo-400 disabled:opacity-50"
           >
             {isSubmitting ? "PUBLICANDO..." : "PUBLICAR"}
           </button>

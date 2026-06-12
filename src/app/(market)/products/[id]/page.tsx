@@ -23,12 +23,13 @@ export default async function DetalleProductoPage({
   const esVendedor = Number(session?.user?.id) === producto.idusuario
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-10">
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(1200px_700px_at_20%_-10%,#8580a8_0%,#5c5878_45%,#44405b_100%)] text-slate-100">
+      <div className="pointer-events-none absolute inset-0 opacity-30 [background:radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.18),transparent_35%),radial-gradient(circle_at_80%_70%,rgba(15,23,42,0.35),transparent_42%)]" />
+      <main className="relative mx-auto flex w-full max-w-7xl flex-grow flex-col px-6 py-10">
 
         <Link
           href="/"
-          className="flex items-center gap-2 text-gray-500 hover:text-[#FF6B00] transition-colors text-sm mb-8"
+          className="mb-8 flex items-center gap-2 text-sm text-slate-200/95 transition-colors hover:text-indigo-200"
         >
           <ArrowLeft className="h-4 w-4" />
           Volver al listado
@@ -38,7 +39,7 @@ export default async function DetalleProductoPage({
 
           {/* Foto */}
           <div className="w-full md:w-1/2">
-            <div className="rounded-2xl overflow-hidden bg-gray-100 h-96 relative">
+            <div className="relative h-96 overflow-hidden rounded-[28px] border border-white/10 bg-[#231f39]/90 shadow-[0_30px_90px_rgba(10,10,30,0.35)] backdrop-blur-xl">
               {producto.fotourl ? (
                 <Image src={producto.fotourl} alt={producto.nombreproducto} fill className="object-cover" />
               ) : producto.fotoproducto ? (
@@ -51,23 +52,23 @@ export default async function DetalleProductoPage({
 
           {/* Info */}
           <div className="w-full md:w-1/2">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col gap-6">
+            <div className="flex flex-col gap-6 rounded-[28px] border border-white/10 bg-[#231f39]/90 p-8 shadow-[0_30px_90px_rgba(10,10,30,0.35)] backdrop-blur-xl">
 
               {/* Vendedor */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-[#FF6B00] font-black text-lg">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-400/10 text-lg font-black text-indigo-100">
                   {producto.vendedor.nombre.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 uppercase font-semibold tracking-wide">Vendedor</p>
-                  <p className="font-bold text-gray-800">{producto.vendedor.nombre}</p>
+                  <p className="text-xs uppercase tracking-[0.28em] text-indigo-100/80">Vendedor</p>
+                  <p className="font-bold text-white">{producto.vendedor.nombre}</p>
                 </div>
               </div>
 
               {/* Nombre y precio */}
               <div>
-                <h1 className="text-3xl font-black text-gray-800 uppercase">{producto.nombreproducto}</h1>
-                <p className="text-3xl text-[#FF6B00] font-black mt-2">
+                <h1 className="text-3xl font-black uppercase tracking-tight text-white">{producto.nombreproducto}</h1>
+                <p className="mt-2 text-3xl font-black text-indigo-200">
                   ${Number(producto.precio).toLocaleString('es-MX')}
                 </p>
               </div>
@@ -75,15 +76,15 @@ export default async function DetalleProductoPage({
               {/* Descripción */}
               {producto.descripcion && (
                 <div>
-                  <p className="text-xs text-gray-400 uppercase font-semibold tracking-wide mb-1">Descripción</p>
-                  <p className="text-gray-700 text-sm">{producto.descripcion}</p>
+                  <p className="mb-1 text-xs uppercase tracking-[0.28em] text-indigo-100/80">Descripción</p>
+                  <p className="text-sm text-slate-200/95">{producto.descripcion}</p>
                 </div>
               )}
 
               {/* Stock */}
               <div>
-                <p className="text-xs text-gray-400 uppercase font-semibold tracking-wide mb-1">Stock</p>
-                <p className="text-gray-800 font-semibold">{producto.stock} disponible(s)</p>
+                <p className="mb-1 text-xs uppercase tracking-[0.28em] text-indigo-100/80">Stock</p>
+                <p className="font-semibold text-slate-100">{producto.stock} disponible(s)</p>
               </div>
 
               {/* Formulario o mensaje */}
@@ -94,7 +95,7 @@ export default async function DetalleProductoPage({
                   stock={producto.stock}
                 />
               ) : (
-                <div className="bg-orange-50 text-[#FF6B00] p-3 rounded-xl text-sm text-center font-semibold border border-orange-100">
+                <div className="rounded-xl border border-indigo-300/40 bg-indigo-400/10 p-3 text-center text-sm font-semibold text-indigo-100">
                   Este es tu producto
                 </div>
               )}

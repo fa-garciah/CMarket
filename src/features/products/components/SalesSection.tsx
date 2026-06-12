@@ -61,8 +61,8 @@ export default function SalesSection({ ventas }: Props) {
         )}
 
         {ventasPendientes.length === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-gray-400">No tienes ventas pendientes.</p>
+          <div className="rounded-[24px] border border-dashed border-white/15 bg-[#231f39]/70 py-10 text-center shadow-[0_18px_45px_rgba(10,10,30,0.25)] backdrop-blur-xl">
+            <p className="text-slate-200">No tienes ventas pendientes.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-4">
@@ -118,14 +118,14 @@ export default function SalesSection({ ventas }: Props) {
                   <button
                     onClick={() => handleUpdateStatus(v.idtransaccion, 2)}
                     disabled={loadingId === v.idtransaccion}
-                    className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-50"
+                    className="rounded-xl bg-emerald-500/90 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-400 disabled:opacity-50"
                   >
                     {loadingId === v.idtransaccion ? "..." : "✓ Marcar como Vendido"}
                   </button>
                   <button
                     onClick={() => handleUpdateStatus(v.idtransaccion, 3)}
                     disabled={loadingId === v.idtransaccion}
-                    className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-50"
+                    className="rounded-xl bg-rose-500/90 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-400 disabled:opacity-50"
                   >
                     {loadingId === v.idtransaccion ? "..." : "✗ Rechazado"}
                   </button>
@@ -149,8 +149,8 @@ export default function SalesSection({ ventas }: Props) {
         </div>
 
         {ventasCompletadas.length === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-gray-400">No tienes ventas completadas aún.</p>
+          <div className="rounded-[24px] border border-dashed border-white/15 bg-[#231f39]/70 py-10 text-center shadow-[0_18px_45px_rgba(10,10,30,0.25)] backdrop-blur-xl">
+            <p className="text-slate-200">No tienes ventas completadas aún.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-4">
@@ -197,9 +197,9 @@ export default function SalesSection({ ventas }: Props) {
                   <p className="text-[#FF6B00] font-black text-lg">
                     ${Number(v.preciototal).toLocaleString('es-MX')}
                   </p>
-                  <p className="text-xs text-gray-400">Cantidad: {v.cantidad}</p>
-                  <p className="text-xs text-gray-400">{v.metodopago.nombremetodopago}</p>
-                  <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold">
+                  <p className="text-xs text-slate-300">Cantidad: {v.cantidad}</p>
+                  <p className="text-xs text-slate-300">{v.metodopago.nombremetodopago}</p>
+                  <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-100">
                     Completada
                   </span>
                 </div>
