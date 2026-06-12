@@ -5,9 +5,9 @@ on:
     branches: ['develop'] # Se ejecuta al hacer push a la rama develop
 
 env:
-  IMAGE_NAME: anahuarket
+  IMAGE_NAME: cmarket
   IMAGE_TAG: develop
-  CONTAINER_NAME: anahuarket-develop
+  CONTAINER_NAME: cmarket-develop
 
 jobs:
   build-and-deploy:
