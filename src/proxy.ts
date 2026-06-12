@@ -7,7 +7,6 @@ export default auth
 
 export const config = {
   matcher: [
-    "/",
     "/agregar-producto",
     "/agregar-producto/:path*",
     "/editar-perfil/:path*",
