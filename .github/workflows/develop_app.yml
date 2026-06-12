@@ -56,4 +56,4 @@ jobs:
         env:
           BELLA_BAXTER_API_KEY: ${{ env.BELLA_API_KEY }}
         run: |
-              bella run -- ./infra/pipelines_notify_dokploy.sh 
+              bella run -- bash ./infra/pipelines_notify_dokploy.sh
