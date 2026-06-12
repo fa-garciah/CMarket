@@ -10,7 +10,6 @@ export async function registerUser(data: RegisterInput) {
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }
-  console.log("verifyUrl")
   const { nombre, telefono, contrasena } = parsed.data;
   const correo = parsed.data.correo.trim().toLowerCase();
 

@@ -57,6 +57,13 @@ export async function getSalesByUser(idvendedor: number) {
   })
 }
 
+export async function getTransactionById(idtransaccion: number) {
+  return prisma.transaccion.findUnique({
+    where: { idtransaccion },
+    select: { idtransaccion: true, idvendedor: true, idcomprador: true, cantidad: true, idproducto: true }
+  })
+}
+
 export async function updateTransactionStatus(idtransaccion: number, idestado: number) {
   const transaction = await prisma.transaccion.findUnique({
     where: { idtransaccion },
