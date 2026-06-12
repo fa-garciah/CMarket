@@ -37,7 +37,7 @@ export default function EditUserForm({ defaultNombre, defaultTelefono, updateUse
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <div>
-        <label className="block text-sm font-bold text-gray-700 mb-2 ml-1">Nombre</label>
+        <label className="mb-2 ml-1 block text-sm font-semibold text-slate-100">Nombre</label>
         <input
           {...register("nombre")}
           placeholder="Tu nombre completo"
@@ -49,7 +49,7 @@ export default function EditUserForm({ defaultNombre, defaultTelefono, updateUse
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-gray-700 mb-2 ml-1">Teléfono</label>
+        <label className="mb-2 ml-1 block text-sm font-semibold text-slate-100">Teléfono</label>
         <input
           {...register("telefono")}
           placeholder="Tu número de teléfono"
@@ -61,8 +61,8 @@ export default function EditUserForm({ defaultNombre, defaultTelefono, updateUse
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-gray-700 mb-2 ml-1">
-          Nueva contraseña <span className="text-gray-400 font-normal">(opcional)</span>
+        <label className="mb-2 ml-1 block text-sm font-semibold text-slate-100">
+          Nueva contraseña <span className="font-normal text-slate-300">(opcional)</span>
         </label>
         <input
           type="password"
@@ -84,14 +84,14 @@ export default function EditUserForm({ defaultNombre, defaultTelefono, updateUse
       <div className="flex gap-4 pt-4">
         <Link
           href="/profile"
-          className="w-full py-4 bg-white border-2 border-gray-200 hover:border-[#FF6B00] text-gray-700 font-bold rounded-xl text-center transition-all"
+          className="w-full rounded-xl border border-white/15 bg-white/8 py-4 text-center font-semibold text-slate-100 transition hover:border-indigo-300/60 hover:bg-white/10"
         >
           CANCELAR
         </Link>
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-4 bg-[#FF6B00] hover:bg-[#e66000] text-white font-black rounded-xl transition-all shadow-xl disabled:opacity-50"
+          className="w-full rounded-xl bg-indigo-500 py-4 font-semibold text-white shadow-[0_18px_45px_rgba(88,80,160,0.35)] transition hover:bg-indigo-400 disabled:opacity-50"
         >
           {loading ? "GUARDANDO..." : "GUARDAR CAMBIOS"}
         </button>

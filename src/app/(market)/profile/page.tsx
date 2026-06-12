@@ -49,42 +49,43 @@ export default async function ProfilePage({
   }))
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      <main className="flex-grow max-w-7xl mx-auto w-full p-6">
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(1200px_700px_at_20%_-10%,#8580a8_0%,#5c5878_45%,#44405b_100%)] text-slate-100">
+      <div className="pointer-events-none absolute inset-0 opacity-30 [background:radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.18),transparent_35%),radial-gradient(circle_at_80%_70%,rgba(15,23,42,0.35),transparent_42%)]" />
+      <main className="relative mx-auto flex w-full max-w-7xl flex-grow flex-col p-6 sm:p-8 lg:p-10">
 
         {/* Mensajes */}
         {updated && (
-          <div className="bg-green-50 text-green-600 p-3 rounded-lg text-sm text-center font-semibold border border-green-100 mb-6">
+          <div className="mb-6 rounded-xl border border-emerald-400/30 bg-emerald-500/12 p-3 text-center text-sm font-semibold text-emerald-100">
             Perfil actualizado. Los cambios de nombre se verán al cerrar sesión y volver a entrar.
           </div>
         )}
         {purchased && (
-          <div className="bg-green-50 text-green-600 p-3 rounded-lg text-sm text-center font-semibold border border-green-100 mb-6">
+          <div className="mb-6 rounded-xl border border-emerald-400/30 bg-emerald-500/12 p-3 text-center text-sm font-semibold text-emerald-100">
             ¡Compra realizada con éxito!
           </div>
         )}
 
         {/* Info del usuario */}
-        <section className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-10">
+        <section className="mb-10 rounded-[28px] border border-white/10 bg-[#231f39]/90 p-8 shadow-[0_30px_90px_rgba(10,10,30,0.35)] backdrop-blur-xl">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
-              <p className="text-[#FF6B00] font-black text-sm uppercase tracking-widest mb-1">
+              <p className="mb-1 text-xs uppercase tracking-[0.35em] text-indigo-100/80">
                 Estudiante de la Anahuac Cancun
               </p>
-              <h1 className="text-4xl font-extrabold text-gray-800">
+              <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl">
                 {session?.user?.name || "Francisco García"}
               </h1>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/agregar-producto"
-                className="px-6 py-3 bg-[#FF6B00] text-white font-bold rounded-xl hover:bg-[#e66000] transition-all shadow-lg shadow-orange-200"
+                className="rounded-xl bg-indigo-500 px-6 py-3 font-semibold text-white shadow-[0_18px_45px_rgba(88,80,160,0.35)] transition hover:bg-indigo-400"
               >
                 AGREGAR PRODUCTO
               </Link>
               <Link
                 href={`/editar-perfil/${session?.user?.id}`}
-                className="px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 font-bold rounded-xl hover:border-[#FF6B00] hover:text-[#FF6B00] transition-all"
+                className="rounded-xl border border-white/15 bg-white/8 px-6 py-3 font-semibold text-slate-100 transition hover:border-indigo-300/60 hover:bg-white/10"
               >
                 EDITAR USUARIO
               </Link>
@@ -125,15 +126,15 @@ export default async function ProfilePage({
           </div>
 
           {transactionsSerialized.length === 0 ? (
-            <div className="text-center py-10">
-              <p className="text-gray-400">No has realizado ninguna compra aún.</p>
+            <div className="rounded-[24px] border border-dashed border-white/15 bg-[#231f39]/70 py-10 text-center shadow-[0_18px_45px_rgba(10,10,30,0.25)] backdrop-blur-xl">
+              <p className="text-slate-200">No has realizado ninguna compra aún.</p>
             </div>
           ) : (
             <div className="flex flex-col gap-4">
               {transactionsSerialized.map((t) => (
                 <div
                   key={t.idtransaccion}
-                  className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row md:items-center gap-4"
+                  className="flex flex-col gap-4 rounded-[24px] border border-white/10 bg-[#231f39]/90 p-6 shadow-[0_18px_45px_rgba(10,10,30,0.25)] backdrop-blur-xl md:flex-row md:items-center"
                 >
                   <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
                     {t.producto.fotourl ? (
@@ -154,10 +155,10 @@ export default async function ProfilePage({
                   </div>
 
                   <div className="flex-grow">
-                    <p className="font-black text-gray-800">{t.producto.nombreproducto}</p>
-                    <p className="text-sm text-gray-400">Vendedor: {t.vendedor.nombre}</p>
-                    <p className="text-sm text-gray-400">Teléfono: {t.vendedor.telefono}</p>
-                    <p className="text-sm text-gray-400">
+                    <p className="font-black text-white">{t.producto.nombreproducto}</p>
+                    <p className="text-sm text-slate-200/90">Vendedor: {t.vendedor.nombre}</p>
+                    <p className="text-sm text-slate-200/90">Teléfono: {t.vendedor.telefono}</p>
+                    <p className="text-sm text-slate-200/90">
                       {new Date(t.fechatransaccion).toLocaleDateString('es-MX', {
                         year: 'numeric', month: 'long', day: 'numeric'
                       })}
@@ -165,12 +166,12 @@ export default async function ProfilePage({
                   </div>
 
                   <div className="flex flex-col items-end gap-1">
-                    <p className="text-[#FF6B00] font-black text-lg">
+                    <p className="text-lg font-black text-indigo-200">
                       ${Number(t.preciototal).toLocaleString('es-MX')}
                     </p>
-                    <p className="text-xs text-gray-400">Cantidad: {t.cantidad}</p>
-                    <p className="text-xs text-gray-400">{t.metodopago.nombremetodopago}</p>
-                    <span className="bg-orange-100 text-[#FF6B00] px-3 py-1 rounded-full text-xs font-bold">
+                    <p className="text-xs text-slate-300">Cantidad: {t.cantidad}</p>
+                    <p className="text-xs text-slate-300">{t.metodopago.nombremetodopago}</p>
+                    <span className="rounded-full border border-indigo-300/40 bg-indigo-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-indigo-100">
                       {t.estado.estado}
                     </span>
                   </div>
