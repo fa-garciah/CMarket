@@ -47,7 +47,7 @@ jobs:
           context: .
           push: true
           # Asegúrate de que el nombre del owner (tu usuario) esté en minúsculas
-          tags: ghcr.io/garciafah/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          tags: ghcr.io/fa-garciah/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           # env.BELLA_API_KEY comes from `Setup Bella Baxter`
           secrets: |
             BELLA_BAXTER_API_KEY=${{ env.BELLA_API_KEY }}
