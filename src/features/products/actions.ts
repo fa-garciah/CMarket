@@ -2,12 +2,15 @@
 
 import { auth } from "@/server/auth"
 import { redirect } from "next/navigation"
-import { createTransaction, getMetodosPago, updateTransactionStatus } from "@/server/services/transactionService"
+import { createTransaction, getMetodosPago, updateTransactionStatus, getTransactionById } from "@/server/services/transactionService"
 import { getProductById, createProduct } from "@/server/services/productService"
 import { createTransactionSchema, CreateTransactionInput } from "@/types/transaction.types"
 import type { CreateProductDTO } from "@/types/product.types"
 
 export async function createProductAction(data: CreateProductDTO) {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/login")
+
   try {
     const product = await createProduct(data)
     return { id: product.idproducto }
@@ -61,6 +64,19 @@ export async function updateTransactionStatusAction(idtransaccion: number, idest
 
   if (![1, 2, 3].includes(idestado)) {
     return { error: "Estado no válido" }
+  }
+
+  const transaction = await getTransactionById(idtransaccion)
+  if (!transaction) return { error: "Transacción no encontrada" }
+
+  const userId = Number(session.user.id)
+  if (userId !== transaction.idvendedor && userId !== transaction.idcomprador) {
+    return { error: "No tienes permisos para esta acción" }
+  }
+
+  // Solo el vendedor puede marcar como completado (estado 2)
+  if (idestado === 2 && userId !== transaction.idvendedor) {
+    return { error: "Solo el vendedor puede completar la venta" }
   }
 
   const result = await updateTransactionStatus(idtransaccion, idestado)
