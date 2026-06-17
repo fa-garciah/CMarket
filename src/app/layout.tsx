@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Providers from "@/components/Providers";
 import "@/styles/globals.css";
 
@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   title: "CMarket",
   description: "Marketplace comunitario de CMarket",
   manifest: "/manifest.json",
-  themeColor: "#231f39",
   icons: {
     icon: [
       { url: "/icons/icon-96x96.png", sizes: "96x96", type: "image/png" },
@@ -14,6 +13,10 @@ export const metadata: Metadata = {
     ],
     apple: "/icons/icon-152x152.png",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#231f39",
 };
 
 export default function RootLayout({
@@ -24,9 +27,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
