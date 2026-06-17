@@ -12,7 +12,7 @@
     "@bella-baxter/sdk": "^0.1.1-preview.11",
     "@ducanh2912/next-pwa": "^10.2.9",
     "@hookform/resolvers": "^5.2.2",
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^7.8.0",
     "@sentry/nextjs": "^10.53.1",
     "bcryptjs": "^3.0.3",
     "lucide-react": "^0.577.0",
