@@ -4,7 +4,47 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+enum RolComunidad {
+  MASTER
+  ADMIN
+  USER
+}
+
+enum EstadoMembresia {
+  PENDIENTE
+  APROBADA
+  RECHAZADA
+  BLOQUEADA
+}
+
+model Comunidad {
+  idcomunidad   Int                 @id @default(autoincrement())
+  nombre        String              @db.VarChar(120)
+  slug          String              @unique @db.VarChar(120)
+  descripcion   String?
+  fechacreacion DateTime            @default(now())
+  isactive      Int                 @default(1) @db.SmallInt
+  miembros      MembresiaComunidad[]
+  productos     Producto[]
+
+  @@map("comunidades")
+}
+
+model MembresiaComunidad {
+  idmembresia    Int             @id @default(autoincrement())
+  idusuario      Int
+  idcomunidad    Int
+  rol            RolComunidad    @default(USER)
+  estado         EstadoMembresia @default(PENDIENTE)
+  fechacreacion  DateTime        @default(now())
+  fechaactualiza DateTime        @updatedAt
+  usuario        Usuario         @relation(fields: [idusuario], references: [idusuario])
+  comunidad      Comunidad       @relation(fields: [idcomunidad], references: [idcomunidad])
+
+  @@unique([idusuario, idcomunidad])
+  @@map("membresias_comunidad")
 }
 
 model Usuario {
@@ -18,6 +58,7 @@ model Usuario {
   fotousuario   Bytes?
   verifytoken   String?        @db.VarChar(255)
   verifytokenexpiry DateTime?
+  membresias    MembresiaComunidad[]
   productos     Producto[]
   compras       Transaccion[]  @relation("Comprador")
   ventas        Transaccion[]  @relation("Vendedor")
@@ -28,6 +69,7 @@ model Usuario {
 model Producto {
   idproducto       Int            @id @default(autoincrement())
   idusuario        Int
+  idcomunidad      Int?
   idcategoria      Int
   iddisponibilidad Int
   nombreproducto   String         @db.VarChar(100)
@@ -39,6 +81,7 @@ model Producto {
   fotoproducto     Bytes?
   fotourl          String?        @db.VarChar(500)
   vendedor         Usuario        @relation(fields: [idusuario], references: [idusuario])
+  comunidad        Comunidad?     @relation(fields: [idcomunidad], references: [idcomunidad])
   categoria        Categoria      @relation(fields: [idcategoria], references: [idcategoria])
   disponibilidad   Disponibilidad @relation(fields: [iddisponibilidad], references: [iddisponibilidad])
   transacciones    Transaccion[]
