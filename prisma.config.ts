@@ -1,10 +1,13 @@
 import { defineConfig } from "prisma/config";
 
 export default defineConfig({
-  migrations: {
-    seed: "tsx prisma/seed.ts",
-  },
-  datasource: {
-    url: "DATABASE_URL",
-  },
+datasource: {
+    // Load environment variables here
+    url: process.env.DATABASE_URL, 
+},
+// Generator settings can also be moved here if necessary
+generator: {
+    name: 'client',
+    provider: 'prisma-client-js',
+},
 });
