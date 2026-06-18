@@ -146,7 +146,7 @@ model Transaccion {
   idcomprador      Int
   idvendedor       Int
   idproducto       Int
-  idcomunidad      Int
+  idcomunidad      Int?
   idestado         Int
   idmetodopago     Int
   cantidad         Int
@@ -156,7 +156,7 @@ model Transaccion {
   comprador        Usuario           @relation("Comprador", fields: [idcomprador], references: [idusuario])
   vendedor         Usuario           @relation("Vendedor", fields: [idvendedor], references: [idusuario])
   producto         Producto          @relation(fields: [idproducto], references: [idproducto])
-  comunidad        Comunidad         @relation(fields: [idcomunidad], references: [idcomunidad])
+  comunidad        Comunidad?        @relation(fields: [idcomunidad], references: [idcomunidad])
   estado           EstadoTransaccion @relation(fields: [idestado], references: [idestado])
   metodopago       MetodoPago        @relation(fields: [idmetodopago], references: [idmetodopago])
   valoraciones     Valoracion[]
