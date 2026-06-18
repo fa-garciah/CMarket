@@ -95,6 +95,56 @@ export async function getUserById(id: number) {
   })
 }
 
+export async function getAllUsuarios() {
+  return prisma.usuario.findMany({
+    select: {
+      idusuario: true,
+      nombre: true,
+      correo: true,
+      telefono: true,
+      rolapp: true,
+      isactive: true,
+      fecharegistro: true,
+      membresias: {
+        select: {
+          rol: true,
+          estado: true,
+          comunidad: { select: { nombre: true } },
+        },
+        where: { estado: "APROBADA" },
+      },
+    },
+    orderBy: { fecharegistro: "desc" },
+  })
+}
+
+export async function createUserByMaster(data: {
+  nombre: string
+  correo: string
+  telefono: string
+  contrasena: string
+  rolapp?: "MASTER" | "USER"
+}) {
+  const correo = data.correo.trim().toLowerCase()
+  const existe = await prisma.usuario.findUnique({ where: { correo } })
+  if (existe) return { error: "El correo ya está registrado" }
+
+  const hashedPassword = await bcrypt.hash(data.contrasena, 12)
+
+  const usuario = await prisma.usuario.create({
+    data: {
+      nombre: data.nombre,
+      correo,
+      telefono: data.telefono,
+      contrasena: hashedPassword,
+      rolapp: data.rolapp ?? "USER",
+      isactive: 1,
+    },
+  })
+
+  return { ok: true, id: usuario.idusuario }
+}
+
 export async function updateUser(id: number, data: UpdateUserInput) {
   const parsed = updateUserSchema.safeParse(data)
   if (!parsed.success) {

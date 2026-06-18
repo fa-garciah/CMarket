@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
+import bcrypt from "bcryptjs"
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
 const prisma = new PrismaClient({ adapter })
@@ -44,7 +45,22 @@ async function main() {
     skipDuplicates: true,
   })
 
+  const masterPassword = await bcrypt.hash("Master123", 12)
+  await prisma.usuario.upsert({
+    where: { correo: "master@cmarket.com" },
+    update: {},
+    create: {
+      nombre: "Master Admin",
+      correo: "master@cmarket.com",
+      telefono: "+52 000 000 0000",
+      contrasena: masterPassword,
+      rolapp: "MASTER",
+      isactive: 1,
+    },
+  })
+
   console.log("Seed completado")
+  console.log("Master: master@cmarket.com / Master123")
 }
 
 main()

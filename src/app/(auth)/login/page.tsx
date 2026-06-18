@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { checkUserVerifiedAction } from "@/features/auth/actions";
 import Link from "next/link";
 import { useState, Suspense } from "react";
@@ -59,7 +59,12 @@ function LoginContent() {
       }
       setServerError("Contrasena incorrecta");
     } else {
-      router.push("/");
+      const session = await getSession()
+      if (session?.user.rolapp === "MASTER") {
+        router.push("/master")
+      } else {
+        router.push("/")
+      }
     }
   });
 

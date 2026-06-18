@@ -47,6 +47,7 @@ export const { auth, signIn, signOut, handlers, unstable_update } = NextAuth({
             id: String(usuario.idusuario),
             name: usuario.nombre,
             email: usuario.correo,
+            rolapp: usuario.rolapp,
           }
         } catch (error) {
           if (error instanceof NoVerificadoError) throw error
@@ -56,10 +57,4 @@ export const { auth, signIn, signOut, handlers, unstable_update } = NextAuth({
       }
     })
   ],
-  callbacks: {
-    session({ session, token }) {
-      session.user.id = token.sub!
-      return session
-    }
-  }
 })
