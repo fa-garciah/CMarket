@@ -16,20 +16,25 @@ export default function MasterProfileForm({ nombre, telefono }: { nombre: string
     const getValue = (name: string) => (form.elements.namedItem(name) as HTMLInputElement).value
     const contrasena = getValue("contrasena")
 
-    const result = await updateMasterProfileAction({
-      nombre: getValue("nombre"),
-      telefono: getValue("telefono"),
-      contrasena: contrasena || undefined,
-    })
+    try {
+      const result = await updateMasterProfileAction({
+        nombre: getValue("nombre"),
+        telefono: getValue("telefono"),
+        contrasena: contrasena || undefined,
+      })
 
-    if (result && "error" in result) {
-      setError(result.error)
+      if (result && "error" in result) {
+        setError(result.error ?? "Error al guardar")
+        setStatus("error")
+        return
+      }
+
+      setStatus("saved")
+      setTimeout(() => setStatus("idle"), 2500)
+    } catch {
+      setError("Error inesperado. Intenta de nuevo.")
       setStatus("error")
-      return
     }
-
-    setStatus("saved")
-    setTimeout(() => setStatus("idle"), 2500)
   }
 
   const inputClass = "w-full rounded-lg bg-white border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-violet-500 transition-colors"

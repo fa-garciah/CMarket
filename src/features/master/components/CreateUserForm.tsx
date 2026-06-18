@@ -17,21 +17,26 @@ export default function CreateUserForm() {
     const form = e.currentTarget
     const getValue = (name: string) => (form.elements.namedItem(name) as HTMLInputElement).value
 
-    const result = await createUserMasterAction({
-      nombre: getValue("nombre"),
-      correo: getValue("correo"),
-      telefono: getValue("telefono"),
-      contrasena: getValue("contrasena"),
-      rolapp: "USER",
-    })
+    try {
+      const result = await createUserMasterAction({
+        nombre: getValue("nombre"),
+        correo: getValue("correo"),
+        telefono: getValue("telefono"),
+        contrasena: getValue("contrasena"),
+        rolapp: "USER",
+      })
 
-    if ("error" in result) {
-      setError(result.error)
+      if ("error" in result) {
+        setError(result.error ?? "Error al crear el usuario")
+        setLoading(false)
+        return
+      }
+
+      router.push("/master/usuarios")
+    } catch {
+      setError("Error inesperado. Intenta de nuevo.")
       setLoading(false)
-      return
     }
-
-    router.push("/master/usuarios")
   }
 
   const inputClass = "w-full rounded-lg bg-white border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-500 transition-colors"

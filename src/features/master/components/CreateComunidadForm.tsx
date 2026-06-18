@@ -26,19 +26,24 @@ export default function CreateComunidadForm() {
     const descripcion = (form.elements.namedItem("descripcion") as HTMLTextAreaElement).value
     const idadminRaw = (form.elements.namedItem("idadmin") as HTMLSelectElement).value
 
-    const result = await createComunidadAction({
-      nombre,
-      descripcion: descripcion || undefined,
-      idadmin: idadminRaw ? Number(idadminRaw) : undefined,
-    })
+    try {
+      const result = await createComunidadAction({
+        nombre,
+        descripcion: descripcion || undefined,
+        idadmin: idadminRaw ? Number(idadminRaw) : undefined,
+      })
 
-    if ("error" in result) {
-      setError(result.error)
+      if ("error" in result) {
+        setError(result.error ?? "Error al crear la comunidad")
+        setLoading(false)
+        return
+      }
+
+      router.push("/master/comunidades")
+    } catch {
+      setError("Error inesperado. Intenta de nuevo.")
       setLoading(false)
-      return
     }
-
-    router.push("/master/comunidades")
   }
 
   return (
