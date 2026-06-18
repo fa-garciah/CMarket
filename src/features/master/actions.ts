@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { getComunidades, createComunidad, updateComunidad } from "@/server/services/comunidadService"
 import { getAllUsuarios, createUserByMaster, getUserById, updateUser } from "@/server/services/userService"
 import { prisma } from "@/server/db/db"
+import { UpdateUserAdminInput } from "@/types/auth.types"
 import z from "zod"
 
 async function requireMaster() {
@@ -31,6 +32,24 @@ export async function createComunidadAction(formData: { nombre: string; descripc
   const parsed = createComunidadSchema.safeParse(formData)
   if (!parsed.success) return { error: parsed.error.issues[0].message }
   return createComunidad(parsed.data.nombre, parsed.data.descripcion, parsed.data.idadmin)
+}
+
+const editComunidadSchema = z.object({
+  idcomunidad: z.number(),
+  nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  descripcion: z.string().max(500, "La descripción no puede tener más de 500 caracteres").optional(),
+})
+
+export type EditComunidadInput = z.infer<typeof editComunidadSchema>
+
+export async function updateComunidadAction(data: EditComunidadInput) {
+  await requireMaster()
+  const parsed = editComunidadSchema.safeParse(data)
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
+  return updateComunidad(parsed.data.idcomunidad, {
+    nombre: parsed.data.nombre,
+    descripcion: parsed.data.descripcion,
+  })
 }
 
 export async function getUsuariosListAction() {
@@ -66,6 +85,27 @@ const createUserMasterSchema = z.object({
     .regex(/[0-9]/, "Debe tener un número"),
   rolapp: z.enum(["MASTER", "USER"]).default("USER"),
 })
+
+const updateUsuarioSchema = z.object({
+  idusuario: z.number(),
+  rolapp: z.enum(["MASTER", "USER"]).optional(),
+  isactive: z.number().optional(),
+})
+
+export type UpdateUsuarioInput = z.infer<typeof updateUsuarioSchema>
+
+export async function updateUsuarioAction(data: UpdateUsuarioInput) {
+  await requireMaster()
+  const parsed = updateUsuarioSchema.safeParse(data)
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
+
+  await updateUser(parsed.data.idusuario, {
+    rolapp: parsed.data.rolapp,
+    isactive: parsed.data.isactive,
+  } as UpdateUserAdminInput)
+
+  return { ok: true }
+}
 
 export type CreateUserMasterInput = z.infer<typeof createUserMasterSchema>
 

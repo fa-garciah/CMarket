@@ -10,9 +10,9 @@ export default async function MasterLayout({ children }: { children: React.React
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-50 text-gray-900">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 text-gray-900">
       <MasterSidebar nombre={session.user.name ?? ""} />
-      <main className="flex-1 overflow-auto p-8">
+      <main className="flex-1 overflow-auto p-4 md:p-8">
         {children}
       </main>
     </div>
