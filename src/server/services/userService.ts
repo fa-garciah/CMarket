@@ -3,6 +3,7 @@ import { registerSchema, RegisterInput, UpdateUserInput, updateUserSchema } from
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { sendVerificationEmail } from "./emailService";
+import z from "zod";
 
 export async function registerUser(data: RegisterInput) {
   const parsed = registerSchema.safeParse(data);
@@ -156,6 +157,8 @@ export async function updateUser(id: number, data: UpdateUserInput) {
   if (parsed.data.nombre) updateData.nombre = parsed.data.nombre
   if (parsed.data.telefono) updateData.telefono = parsed.data.telefono
   if (parsed.data.contrasena) updateData.contrasena = await bcrypt.hash(parsed.data.contrasena, 12)
+  if ((parsed.data as any).rolapp) updateData.rolapp = (parsed.data as any).rolapp
+  if ((parsed.data as any).isactive !== undefined) updateData.isactive = (parsed.data as any).isactive
 
   if (Object.keys(updateData).length === 0) {
     return { error: "No hay cambios que guardar" }

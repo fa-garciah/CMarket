@@ -24,4 +24,10 @@ export const updateUserSchema = z.object({
     contrasena: passwordSchema.optional(),
 });
 
+export const updateUserAdminSchema = updateUserSchema.extend({
+    rolapp: z.enum(["MASTER", "USER"]).optional(),
+    isactive: z.number().optional(),
+});
+
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
+export type UpdateUserAdminInput = z.infer<typeof updateUserAdminSchema>;
