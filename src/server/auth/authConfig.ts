@@ -22,7 +22,7 @@ export const authConfig: NextAuthConfig = {
     async session({ session, token }) {
       session.user.id = token.sub!
       session.user.name = token.name as string
-      session.user.rolapp = token.rolapp
+      session.user.rolapp = token.rolapp as "MASTER" | "USER"
       return session
     }
   },

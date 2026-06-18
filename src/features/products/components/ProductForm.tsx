@@ -5,23 +5,20 @@ import { useState } from "react"
 import { CldUploadWidget } from "next-cloudinary"
 import { createProductAction } from "@/features/products/actions"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createProductSchema, type ProductFormValues, type CreateProductDTO } from "@/types/product.types"
+import { createProductSchema, type ProductFormValues } from "@/types/product.types"
+import { ImagePlus } from "lucide-react"
 
-type Categoria = {
-  idcategoria: number
-  nombrecategoria: string
-}
-
-type Disponibilidad = {
-  iddisponibilidad: number
-  nombredisponibilidad: string
-}
+type Categoria = { idcategoria: number; nombrecategoria: string }
+type Disponibilidad = { iddisponibilidad: number; nombredisponibilidad: string }
 
 type Props = {
   categorias: Categoria[]
   disponibilidades: Disponibilidad[]
   userId: number
 }
+
+const inputClass = "w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-violet-500 focus:bg-white"
+const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-widest text-gray-400"
 
 export default function ProductForm({ categorias, disponibilidades, userId }: Props) {
   const router = useRouter()
@@ -48,13 +45,11 @@ export default function ProductForm({ categorias, disponibilidades, userId }: Pr
   })
 
   return (
-    <form onSubmit={onSubmitHandler} className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.02fr_1fr]">
+    <form onSubmit={onSubmitHandler} className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_1.1fr]">
 
       {/* Imagen */}
-      <div className="space-y-4 rounded-[28px] border border-white/10 bg-[#231f39]/90 p-6 shadow-[0_30px_90px_rgba(10,10,30,0.35)] backdrop-blur-xl sm:p-8">
-        <label className="ml-1 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">
-          Imagen del Producto
-        </label>
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <label className={labelClass}>Imagen del Producto</label>
         <CldUploadWidget
           uploadPreset="anahuarket_products"
           onSuccess={(result) => {
@@ -68,18 +63,17 @@ export default function ProductForm({ categorias, disponibilidades, userId }: Pr
           {({ open }) => (
             <div
               onClick={() => open()}
-              className="group relative flex aspect-square cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[28px] border border-dashed border-white/15 bg-white/6 transition-all hover:border-indigo-300/70 hover:bg-white/10"
+              className="group relative mt-2 flex aspect-square cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 transition-all hover:border-violet-400 hover:bg-violet-50/40"
             >
               {imagePreview ? (
                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
               ) : (
                 <div className="p-10 text-center">
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/8 text-indigo-100/90">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100">
+                    <ImagePlus size={24} className="text-gray-400" />
                   </div>
-                  <p className="text-sm font-semibold text-slate-100">Haz clic para subir una foto</p>
+                  <p className="text-sm font-semibold text-gray-500">Haz clic para subir una foto</p>
+                  <p className="mt-1 text-xs text-gray-400">PNG, JPG, WEBP</p>
                 </div>
               )}
             </div>
@@ -88,104 +82,73 @@ export default function ProductForm({ categorias, disponibilidades, userId }: Pr
       </div>
 
       {/* Campos */}
-      <div className="space-y-6 rounded-[28px] border border-white/10 bg-[#231f39]/90 p-8 shadow-[0_30px_90px_rgba(10,10,30,0.35)] backdrop-blur-xl sm:p-10">
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8 space-y-5">
         <div>
-          <label className="mb-2 ml-1 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">Nombre</label>
-          <input
-            type="text"
-            placeholder="Ej. Bata de Laboratorio"
-            {...register("nombreproducto")}
-            className="w-full rounded-xl border border-white/15 bg-white/8 px-5 py-4 text-sm text-white outline-none transition placeholder:text-slate-400 focus:border-indigo-300/70 focus:bg-white/12"
-          />
-          {errors.nombreproducto && (
-            <p className="text-red-500 text-xs mt-1 ml-1">{errors.nombreproducto.message}</p>
-          )}
+          <label className={labelClass}>Nombre</label>
+          <input type="text" placeholder="Ej. Bata de Laboratorio" {...register("nombreproducto")} className={inputClass} />
+          {errors.nombreproducto && <p className="mt-1 ml-1 text-xs text-red-500">{errors.nombreproducto.message}</p>}
         </div>
 
         <div>
-          <label className="mb-2 ml-1 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">Descripción</label>
+          <label className={labelClass}>Descripción</label>
           <textarea
             placeholder="Estado del producto, lugar de entrega..."
             {...register("descripcion")}
-            className="h-24 w-full resize-none rounded-xl border border-white/15 bg-white/8 px-5 py-4 text-sm text-white outline-none transition placeholder:text-slate-400 focus:border-indigo-300/70 focus:bg-white/12"
+            className={`${inputClass} h-24 resize-none`}
           />
-          {errors.descripcion && (
-            <p className="text-red-500 text-xs mt-1 ml-1">{errors.descripcion.message}</p>
-          )}
+          {errors.descripcion && <p className="mt-1 ml-1 text-xs text-red-500">{errors.descripcion.message}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="mb-2 ml-1 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">Categoría</label>
-            <select
-              {...register("idcategoria", { valueAsNumber: true })}
-              className="w-full px-5 py-4 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:border-[#FF6B00] outline-none appearance-none text-gray-800"
-            >
+            <label className={labelClass}>Categoría</label>
+            <select {...register("idcategoria", { valueAsNumber: true })} className={inputClass}>
               <option value="">Seleccionar</option>
               {categorias.map((cat) => (
                 <option key={cat.idcategoria} value={cat.idcategoria}>{cat.nombrecategoria}</option>
               ))}
             </select>
-            {errors.idcategoria && (
-              <p className="text-red-500 text-xs mt-1 ml-1">{errors.idcategoria.message}</p>
-            )}
+            {errors.idcategoria && <p className="mt-1 ml-1 text-xs text-red-500">{errors.idcategoria.message}</p>}
+          </div>
 
-            <label className="mb-2 ml-1 mt-4 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">Disponibilidad</label>
-            <select
-              {...register("iddisponibilidad", { valueAsNumber: true  })}
-              className="w-full px-5 py-4 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:border-[#FF6B00] outline-none appearance-none text-gray-800"
-            >
+          <div>
+            <label className={labelClass}>Precio ($)</label>
+            <input type="number" {...register("precio", { valueAsNumber: true })} className={inputClass} min="0" step="0.01" />
+            {errors.precio && <p className="mt-1 ml-1 text-xs text-red-500">{errors.precio.message}</p>}
+          </div>
+
+          <div>
+            <label className={labelClass}>Disponibilidad</label>
+            <select {...register("iddisponibilidad", { valueAsNumber: true })} className={inputClass}>
               <option value="">Seleccionar</option>
               {disponibilidades.map((d) => (
                 <option key={d.iddisponibilidad} value={d.iddisponibilidad}>{d.nombredisponibilidad}</option>
               ))}
             </select>
-            {errors.iddisponibilidad && (
-              <p className="text-red-500 text-xs mt-1 ml-1">{errors.iddisponibilidad.message}</p>
-            )}
+            {errors.iddisponibilidad && <p className="mt-1 ml-1 text-xs text-red-500">{errors.iddisponibilidad.message}</p>}
           </div>
 
           <div>
-            <label className="mb-2 ml-1 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">Precio ($)</label>
-            <input
-              type="number"
-              {...register("precio", { valueAsNumber: true })}
-              className="w-full px-5 py-4 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:border-[#FF6B00] outline-none transition-all text-gray-800"
-              min="0"
-              step="0.01"
-            />
-            {errors.precio && (
-              <p className="text-red-500 text-xs mt-1 ml-1">{errors.precio.message}</p>
-            )}
-
-            <label className="mb-2 ml-1 mt-4 block text-xs font-black uppercase tracking-[0.35em] text-indigo-100/80">Stock</label>
-            <input
-              type="number"
-              {...register("stock", { valueAsNumber: true })}
-              className="w-full px-5 py-4 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:border-[#FF6B00] outline-none transition-all text-gray-800"
-              min="0"
-              step="1"
-            />
-            {errors.stock && (
-              <p className="text-red-500 text-xs mt-1 ml-1">{errors.stock.message}</p>
-            )}
+            <label className={labelClass}>Stock</label>
+            <input type="number" {...register("stock", { valueAsNumber: true })} className={inputClass} min="0" step="1" />
+            {errors.stock && <p className="mt-1 ml-1 text-xs text-red-500">{errors.stock.message}</p>}
           </div>
         </div>
 
-        <div className="flex gap-4 pt-4">
+        <div className="flex gap-3 pt-2">
           <button
             type="button"
             onClick={() => router.back()}
-            className="flex-1 rounded-xl border border-white/15 bg-white/8 py-4 font-semibold text-slate-100 transition hover:bg-white/10"
+            className="flex-1 rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
           >
-            CANCELAR
+            Cancelar
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 rounded-xl bg-indigo-500 py-4 font-semibold text-white shadow-[0_18px_45px_rgba(88,80,160,0.35)] transition hover:bg-indigo-400 disabled:opacity-50"
+            className="flex-1 rounded-xl bg-violet-600 hover:bg-violet-700 py-3 text-sm font-semibold text-white transition disabled:opacity-50"
           >
-            {isSubmitting ? "PUBLICANDO..." : "PUBLICAR"}
+            {isSubmitting ? "Publicando..." : "Publicar"}
           </button>
         </div>
       </div>
