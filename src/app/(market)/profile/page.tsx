@@ -71,7 +71,15 @@ export default async function ProfilePage({
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {serialized.map((p) => (
-            <ProductCard key={p.idproducto} {...p} />
+            <div key={p.idproducto} className="relative group">
+              <ProductCard {...p} hideVerMas />
+              <Link
+                href={`/editar-producto/${p.idproducto}`}
+                className="absolute bottom-3.5 right-4 z-10 rounded-full bg-violet-600 border border-violet-700 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-violet-700"
+              >
+                Editar
+              </Link>
+            </div>
           ))}
         </div>
       )}
