@@ -66,19 +66,17 @@ export async function generateInviteCode(idcomunidad: number, horas: number) {
   const { randomUUID } = await import("crypto");
   const codigo = randomUUID();
   const expiracion = new Date(Date.now() + horas * 60 * 60 * 1000);
-  // cast until `prisma migrate dev` regenerates types with the new nullable fields
   await prisma.comunidad.update({
     where: { idcomunidad },
-    data: { codigoinvitacion: codigo, codigoexpiracion: expiracion } as never,
+    data: { codigoinvitacion: codigo, codigoexpiracion: expiracion },
   });
   return { codigoinvitacion: codigo, codigoexpiracion: expiracion };
 }
 
 export async function revokeInviteCode(idcomunidad: number) {
-  // cast needed until `prisma migrate dev` regenerates types with the nullable fields
   await prisma.comunidad.update({
     where: { idcomunidad },
-    data: { codigoinvitacion: null, codigoexpiracion: null } as never,
+    data: { codigoinvitacion: null, codigoexpiracion: null },
   });
   return { ok: true };
 }
@@ -116,8 +114,7 @@ export async function getProductosByComunidad(idcomunidad: number) {
 }
 
 export async function getComunidadByCodigoInvitacion(codigo: string) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (prisma as any).comunidad.findUnique({
+  return prisma.comunidad.findUnique({
     where: { codigoinvitacion: codigo },
     select: {
       idcomunidad: true,
@@ -127,9 +124,5 @@ export async function getComunidadByCodigoInvitacion(codigo: string) {
       isactive: true,
       _count: { select: { miembros: { where: { estado: "APROBADA" } } } },
     },
-  }) as Promise<{
-    idcomunidad: number; nombre: string; descripcion: string | null;
-    codigoexpiracion: Date | null; isactive: number;
-    _count: { miembros: number }
-  } | null>
+  })
 }

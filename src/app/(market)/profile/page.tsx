@@ -1,15 +1,16 @@
 import { auth } from "@/server/auth"
 import { getProductsByUser } from "@/server/services/productService"
 import ProductCard from "@/features/products/components/ProductCard"
+import SearchFilter from "@/features/products/components/SearchFilter"
 import Link from "next/link"
 import { Package, PlusCircle } from "lucide-react"
 
 export default async function ProfilePage({
   searchParams,
 }: {
-  searchParams: Promise<{ updated?: string; purchased?: string }>
+  searchParams: Promise<{ updated?: string; purchased?: string; search?: string; category?: string }>
 }) {
-  const { updated, purchased } = await searchParams
+  const { updated, purchased, search, category } = await searchParams
   const session = await auth()
 
   const products = await getProductsByUser(Number(session?.user?.id))
@@ -20,6 +21,18 @@ export default async function ProfilePage({
     fotoproducto: p.fotoproducto ? true : false,
     fechapublicacion: p.fechapublicacion.toISOString(),
   }))
+
+  const categorias = [...new Set(serialized.map((p) => p.categoria.nombrecategoria))].sort()
+
+  const filtered = serialized.filter((p) => {
+    const matchSearch = search
+      ? p.nombreproducto.toLowerCase().includes(search.toLowerCase())
+      : true
+    const matchCategory = category
+      ? p.categoria.nombrecategoria.toLowerCase() === category.toLowerCase()
+      : true
+    return matchSearch && matchCategory
+  })
 
   return (
     <div className="mx-auto w-full max-w-7xl p-6 sm:p-8 lg:p-10">
@@ -34,23 +47,20 @@ export default async function ProfilePage({
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-8">
+      <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-gray-900">Mis Productos</h1>
-          <p className="mt-1 text-sm text-gray-500">Artículos que tienes en venta</p>
+          <p className="mt-1 text-sm text-gray-500">
+            {filtered.length} de {serialized.length} {serialized.length === 1 ? "artículo" : "artículos"}
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="bg-gray-100 border border-gray-200 text-gray-500 px-3 py-1 rounded-full text-xs font-bold">
-            {serialized.length} {serialized.length === 1 ? "artículo" : "artículos"}
-          </span>
-          <Link
-            href="/agregar-producto"
-            className="flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 px-4 py-2 text-sm font-semibold text-white transition"
-          >
-            <PlusCircle size={15} />
-            Publicar
-          </Link>
-        </div>
+        <Link
+          href="/agregar-producto"
+          className="flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 px-4 py-2 text-sm font-semibold text-white transition"
+        >
+          <PlusCircle size={15} />
+          Publicar
+        </Link>
       </div>
 
       {serialized.length === 0 ? (
@@ -69,19 +79,34 @@ export default async function ProfilePage({
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {serialized.map((p) => (
-            <div key={p.idproducto} className="relative group">
-              <ProductCard {...p} hideVerMas />
-              <Link
-                href={`/editar-producto/${p.idproducto}`}
-                className="absolute bottom-3.5 right-4 z-10 rounded-full bg-violet-600 border border-violet-700 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-violet-700"
-              >
-                Editar
-              </Link>
+        <>
+          <SearchFilter
+            categorias={categorias}
+            currentSearch={search}
+            currentCategory={category}
+            placeholder="Buscar mis productos..."
+          />
+          {filtered.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-gray-300 bg-white py-12 text-center shadow-sm">
+              <p className="font-semibold text-gray-700">Sin resultados</p>
+              <p className="mt-1 text-sm text-gray-400">Prueba con otra búsqueda o categoría.</p>
             </div>
-          ))}
-        </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              {filtered.map((p) => (
+                <div key={p.idproducto} className="relative group">
+                  <ProductCard {...p} hideVerMas />
+                  <Link
+                    href={`/editar-producto/${p.idproducto}`}
+                    className="absolute bottom-3.5 right-4 z-10 rounded-full bg-violet-600 border border-violet-700 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-violet-700"
+                  >
+                    Editar
+                  </Link>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   )

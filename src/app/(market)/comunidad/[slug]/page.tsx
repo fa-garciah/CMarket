@@ -4,11 +4,15 @@ import { getMembresiaByUserAndComunidad } from "@/server/services/membresiaServi
 import { notFound } from "next/navigation"
 import { Building2, Clock, ShieldX, Package, Users, Crown } from "lucide-react"
 import ProductCard from "@/features/products/components/ProductCard"
+import SearchFilter from "@/features/products/components/SearchFilter"
 
-type Props = { params: Promise<{ slug: string }> }
+type Props = {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ search?: string; category?: string }>
+}
 
-export default async function ComunidadPage({ params }: Props) {
-  const { slug } = await params
+export default async function ComunidadPage({ params, searchParams }: Props) {
+  const [{ slug }, { search, category }] = await Promise.all([params, searchParams])
   const [session, comunidad] = await Promise.all([auth(), getComunidadBySlug(slug)])
 
   if (!comunidad || !comunidad.isactive) notFound()
@@ -65,17 +69,40 @@ export default async function ComunidadPage({ params }: Props) {
   }
 
   // Approved member — load products
-  const productos = await getProductosByComunidad(comunidad.idcomunidad)
+  const todosLosProductos = await getProductosByComunidad(comunidad.idcomunidad)
   const isAdmin = membresia.rol === "ADMIN"
+
+  const categorias = [...new Set(todosLosProductos.map((p) => p.categoria.nombrecategoria))].sort()
+
+  const productos = todosLosProductos.filter((p) => {
+    const matchSearch = search
+      ? p.nombreproducto.toLowerCase().includes(search.toLowerCase()) ||
+        p.vendedor.nombre.toLowerCase().includes(search.toLowerCase())
+      : true
+    const matchCategory = category
+      ? p.categoria.nombrecategoria.toLowerCase() === category.toLowerCase()
+      : true
+    return matchSearch && matchCategory
+  })
 
   return (
     <PageWrapper comunidad={comunidad} memberCount={comunidad._count.miembros} isAdmin={isAdmin}>
+      <SearchFilter
+        categorias={categorias}
+        currentSearch={search}
+        currentCategory={category}
+        placeholder="Buscar por producto o vendedor..."
+      />
       {productos.length === 0 ? (
         <div className="flex flex-col items-center py-20 text-center">
           <IconBox><Package size={26} className="text-gray-400" /></IconBox>
-          <h2 className="mt-4 text-lg font-bold text-gray-900">Sin productos aún</h2>
+          <h2 className="mt-4 text-lg font-bold text-gray-900">
+            {search || category ? "Sin resultados" : "Sin productos aún"}
+          </h2>
           <p className="mt-1 text-sm text-gray-500 max-w-sm">
-            Ningún miembro ha publicado productos en esta comunidad todavía.
+            {search || category
+              ? "Prueba con otra búsqueda o categoría."
+              : "Ningún miembro ha publicado productos en esta comunidad todavía."}
           </p>
         </div>
       ) : (
