@@ -4,8 +4,8 @@ import { ArrowLeft } from "lucide-react"
 import { getComunidadBySlug } from "@/server/services/comunidadService"
 import { notFound } from "next/navigation"
 
-export default async function EditarComunidadPage({ params }: { params: { slug?: string | string[] } }) {
-  const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug
+export default async function EditarComunidadPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
   if (!slug) notFound()
 
   const comunidad = await getComunidadBySlug(slug)
