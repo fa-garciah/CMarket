@@ -143,11 +143,7 @@ export async function removeMiembroAction(idmembresia: number) {
 
 export async function generateInviteCodeAction(idcomunidad: number, horas: number) {
   await requireMaster()
-  // cast until `prisma migrate dev` regenerates types with the new nullable fields
-  const result = await generateInviteCode(idcomunidad, horas) as unknown as {
-    codigoinvitacion: string | null
-    codigoexpiracion: Date | null
-  }
+  const result = await generateInviteCode(idcomunidad, horas)
   return {
     codigoinvitacion: result.codigoinvitacion,
     codigoexpiracion: result.codigoexpiracion?.toISOString() ?? null,
