@@ -98,6 +98,47 @@ export async function updateProduct(
   })
 }
 
+export async function getUserProductCount(idusuario: number) {
+  return prisma.producto.count({ where: { idusuario, isactive: 1 } })
+}
+
+export async function getProductosDeMisComunidades(idusuario: number, limit = 30) {
+  const rows = await prisma.producto.findMany({
+    where: {
+      isactive: 1,
+      publicaciones: {
+        some: {
+          isactive: 1,
+          comunidad: { miembros: { some: { idusuario, estado: "APROBADA" } } },
+        },
+      },
+    },
+    select: {
+      idproducto: true,
+      nombreproducto: true,
+      precio: true,
+      fotoproducto: true,
+      fotourl: true,
+      vendedor: { select: { nombre: true } },
+      categoria: { select: { nombrecategoria: true } },
+      disponibilidad: { select: { nombredisponibilidad: true } },
+    },
+    orderBy: { fechapublicacion: "desc" },
+    take: limit,
+  })
+  return rows
+    .filter((p) => p.disponibilidad.nombredisponibilidad.toLowerCase() !== "agotado")
+    .map((p) => ({
+      idproducto:     p.idproducto,
+      nombreproducto: p.nombreproducto,
+      precio:         Number(p.precio),
+      fotoproducto:   !!p.fotoproducto,
+      fotourl:        p.fotourl,
+      vendedor:       p.vendedor,
+      categoria:      p.categoria,
+    }))
+}
+
 export async function getPublicacionesByProducto(idproducto: number) {
   return prisma.publicacionProducto.findMany({
     where: { idproducto },
