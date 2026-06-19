@@ -55,6 +55,113 @@ export async function getDisponibilidades() {
   return prisma.disponibilidad.findMany()
 }
 
+export async function getProductForEdit(id: number) {
+  return prisma.producto.findUnique({
+    where: { idproducto: id },
+    select: {
+      idproducto: true,
+      idusuario: true,
+      nombreproducto: true,
+      descripcion: true,
+      precio: true,
+      stock: true,
+      idcategoria: true,
+      iddisponibilidad: true,
+      fotourl: true,
+    },
+  })
+}
+
+export async function updateProduct(
+  id: number,
+  data: {
+    nombreproducto: string
+    descripcion: string
+    idcategoria: number
+    iddisponibilidad: number
+    precio: number
+    stock: number
+    imageUrl?: string
+  },
+) {
+  return prisma.producto.update({
+    where: { idproducto: id },
+    data: {
+      nombreproducto: data.nombreproducto,
+      descripcion: data.descripcion,
+      idcategoria: data.idcategoria,
+      iddisponibilidad: data.iddisponibilidad,
+      precio: data.precio,
+      stock: data.stock,
+      ...(data.imageUrl ? { fotourl: data.imageUrl } : {}),
+    },
+  })
+}
+
+export async function getUserProductCount(idusuario: number) {
+  return prisma.producto.count({ where: { idusuario, isactive: 1 } })
+}
+
+export async function getProductosDeMisComunidades(idusuario: number, limit = 50) {
+  const rows = await prisma.producto.findMany({
+    where: {
+      isactive: 1,
+      publicaciones: {
+        some: {
+          isactive: 1,
+          comunidad: { miembros: { some: { idusuario, estado: "APROBADA" } } },
+        },
+      },
+    },
+    select: {
+      idproducto: true,
+      nombreproducto: true,
+      precio: true,
+      fotoproducto: true,
+      fotourl: true,
+      vendedor: { select: { nombre: true } },
+      categoria: { select: { nombrecategoria: true } },
+      disponibilidad: { select: { nombredisponibilidad: true } },
+      publicaciones: {
+        where: {
+          isactive: 1,
+          comunidad: { miembros: { some: { idusuario, estado: "APROBADA" } } },
+        },
+        select: { comunidad: { select: { nombre: true, slug: true } } },
+      },
+    },
+    orderBy: { fechapublicacion: "desc" },
+    take: limit,
+  })
+  return rows
+    .filter((p) => p.disponibilidad.nombredisponibilidad.toLowerCase() !== "agotado")
+    .map((p) => ({
+      idproducto:     p.idproducto,
+      nombreproducto: p.nombreproducto,
+      precio:         Number(p.precio),
+      fotoproducto:   !!p.fotoproducto,
+      fotourl:        p.fotourl,
+      vendedor:       p.vendedor,
+      categoria:      p.categoria,
+      comunidades:    p.publicaciones.map((pub) => pub.comunidad),
+    }))
+}
+
+export async function getPublicacionesByProducto(idproducto: number) {
+  return prisma.publicacionProducto.findMany({
+    where: { idproducto },
+    select: { idcomunidad: true, isactive: true },
+  })
+}
+
+export async function upsertPublicacion(idproducto: number, idcomunidad: number, isactive: 0 | 1) {
+  return prisma.publicacionProducto.upsert({
+    where: { idproducto_idcomunidad: { idproducto, idcomunidad } },
+    create: { idproducto, idcomunidad, isactive },
+    update: { isactive },
+  })
+}
+
 export async function createProduct(data: CreateProductDTO) {
   return prisma.producto.create({
     data: {

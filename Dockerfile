@@ -8,15 +8,6 @@ RUN npm ci
 
 COPY . .
 
-# ARG NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-# ENV NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=$NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-
-# ARG SENTRY_AUTH_TOKEN
-# ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
-
-# ARG SENTRY_ENVIRONMENT
-# ENV SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT
-
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
@@ -39,4 +30,4 @@ RUN --mount=type=secret,id=BELLA_BAXTER_API_KEY \
 
 EXPOSE 3000
 
-CMD ["bella", "run", "--", "sh", "-c", "npx prisma db push && npx prisma db seed && npm start"]
+CMD ["bella", "run", "--", "sh", "-c", "npx prisma db push --accept-data-loss && npx prisma db seed && npm start"]

@@ -1,0 +1,59 @@
+name: CI/CD Pipeline a VPS
+
+on:
+  push:
+    branches: ['develop'] # Se ejecuta al hacer push a la rama develop
+
+env:
+  IMAGE_NAME: cmarket
+  IMAGE_TAG: develop
+  CONTAINER_NAME: cmarket-develop
+
+jobs:
+  build-and-deploy:
+    environment: develop
+    runs-on: ubuntu-latest
+    env:
+      SENTRY_ENVIRONMENT: develop
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v6
+
+      - name: Login en GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Bella Baxter
+        uses: cosmic-chimps/bella-baxter-setup-action@v0.1.1-preview.88
+        with:
+          oidc: true
+        env:
+          BELLA_BAXTER_DEBUG: '1'
+          BELLA_BAXTER_TENANT: t
+          BELLA_BAXTER_PROJECT: anahuarket
+          BELLA_BAXTER_ENV: develop
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # Asegúrate de que el nombre del owner (tu usuario) esté en minúsculas
+          tags: ghcr.io/fa-garciah/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          # env.BELLA_API_KEY comes from `Setup Bella Baxter`
+          secrets: |
+            BELLA_BAXTER_API_KEY=${{ env.BELLA_API_KEY }}
+
+      - name: Notificar a Dokploy (Trigger Deploy)
+        env:
+          BELLA_BAXTER_API_KEY: ${{ env.BELLA_API_KEY }}
+        run: |
+              bella run -- bash ./infra/pipelines_notify_dokploy.sh

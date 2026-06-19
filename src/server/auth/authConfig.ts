@@ -9,7 +9,10 @@ export const authConfig: NextAuthConfig = {
     authorized({ auth }) {
       return !!auth?.user
     },
-    async jwt({ token, trigger, session }) {
+    async jwt({ token, user, trigger, session }) {
+      if (user) {
+        token.rolapp = user.rolapp
+      }
       if (trigger === "update" && session) {
         token.name = session.name
         token.telefono = session.telefono
@@ -17,7 +20,9 @@ export const authConfig: NextAuthConfig = {
       return token
     },
     async session({ session, token }) {
+      session.user.id = token.sub!
       session.user.name = token.name as string
+      session.user.rolapp = token.rolapp as "MASTER" | "USER"
       return session
     }
   },

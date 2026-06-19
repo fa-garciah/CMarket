@@ -2,12 +2,17 @@
 
 import { auth } from "@/server/auth"
 import { redirect } from "next/navigation"
-import { createTransaction, getMetodosPago, updateTransactionStatus } from "@/server/services/transactionService"
-import { getProductById, createProduct } from "@/server/services/productService"
+import { revalidatePath } from "next/cache"
+import { createTransaction, getMetodosPago, updateTransactionStatus, getTransactionById } from "@/server/services/transactionService"
+import { getProductById, createProduct, getProductForEdit, updateProduct, upsertPublicacion } from "@/server/services/productService"
+import { getMembresiaByUserAndComunidad } from "@/server/services/membresiaService"
 import { createTransactionSchema, CreateTransactionInput } from "@/types/transaction.types"
 import type { CreateProductDTO } from "@/types/product.types"
 
 export async function createProductAction(data: CreateProductDTO) {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/login")
+
   try {
     const product = await createProduct(data)
     return { id: product.idproducto }
@@ -15,6 +20,63 @@ export async function createProductAction(data: CreateProductDTO) {
     console.error("[createProduct] Error:", error)
     return { error: "Error al publicar el producto" }
   }
+}
+
+export async function updateProductAction(
+  idproducto: number,
+  data: {
+    nombreproducto: string
+    descripcion: string
+    idcategoria: number
+    iddisponibilidad: number
+    precio: number
+    stock: number
+    imageUrl?: string
+  },
+) {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/login")
+
+  const producto = await getProductForEdit(idproducto)
+  if (!producto) return { error: "Producto no encontrado" }
+  if (producto.idusuario !== Number(session.user.id)) return { error: "No tienes permiso para editar este producto" }
+
+  try {
+    await updateProduct(idproducto, data)
+    revalidatePath("/profile")
+    return { ok: true }
+  } catch {
+    return { error: "Error al actualizar el producto" }
+  }
+}
+
+export async function publishToComAction(idproducto: number, idcomunidad: number) {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/login")
+
+  const producto = await getProductForEdit(idproducto)
+  if (!producto) return { error: "Producto no encontrado" }
+  if (producto.idusuario !== Number(session.user.id)) return { error: "No tienes permiso" }
+
+  const membresia = await getMembresiaByUserAndComunidad(Number(session.user.id), idcomunidad)
+  if (!membresia || membresia.estado !== "APROBADA") return { error: "No eres miembro de esta comunidad" }
+
+  await upsertPublicacion(idproducto, idcomunidad, 1)
+  revalidatePath("/comunidad", "layout")
+  return { ok: true }
+}
+
+export async function unpublishFromComAction(idproducto: number, idcomunidad: number) {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/login")
+
+  const producto = await getProductForEdit(idproducto)
+  if (!producto) return { error: "Producto no encontrado" }
+  if (producto.idusuario !== Number(session.user.id)) return { error: "No tienes permiso" }
+
+  await upsertPublicacion(idproducto, idcomunidad, 0)
+  revalidatePath("/comunidad", "layout")
+  return { ok: true }
 }
 
 export async function getMetodosPagoAction() {
@@ -61,6 +123,19 @@ export async function updateTransactionStatusAction(idtransaccion: number, idest
 
   if (![1, 2, 3].includes(idestado)) {
     return { error: "Estado no válido" }
+  }
+
+  const transaction = await getTransactionById(idtransaccion)
+  if (!transaction) return { error: "Transacción no encontrada" }
+
+  const userId = Number(session.user.id)
+  if (userId !== transaction.idvendedor && userId !== transaction.idcomprador) {
+    return { error: "No tienes permisos para esta acción" }
+  }
+
+  // Solo el vendedor puede marcar como completado (estado 2)
+  if (idestado === 2 && userId !== transaction.idvendedor) {
+    return { error: "Solo el vendedor puede completar la venta" }
   }
 
   const result = await updateTransactionStatus(idtransaccion, idestado)

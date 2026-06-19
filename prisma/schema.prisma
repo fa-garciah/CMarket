@@ -4,46 +4,110 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+
+}
+
+enum RolApp {
+  MASTER
+  USER
+}
+
+enum RolComunidad {
+  ADMIN
+  USER
+}
+
+enum EstadoMembresia {
+  PENDIENTE
+  APROBADA
+  RECHAZADA
+  BLOQUEADA
+}
+
+model Comunidad {
+  idcomunidad      Int                   @id @default(autoincrement())
+  nombre           String                @db.VarChar(120)
+  slug             String                @unique @db.VarChar(120)
+  descripcion      String?
+  codigoinvitacion String?               @unique @db.VarChar(100)
+  codigoexpiracion DateTime?
+  fechacreacion    DateTime              @default(now())
+  isactive         Int                   @default(1) @db.SmallInt
+  miembros         MembresiaComunidad[]
+  publicaciones    PublicacionProducto[]
+  transacciones    Transaccion[]
+
+  @@map("comunidades")
+}
+
+model MembresiaComunidad {
+  idmembresia    Int             @id @default(autoincrement())
+  idusuario      Int
+  idcomunidad    Int
+  rol            RolComunidad    @default(USER)
+  estado         EstadoMembresia @default(PENDIENTE)
+  fechacreacion  DateTime        @default(now())
+  fechaactualiza DateTime        @updatedAt
+  usuario        Usuario         @relation(fields: [idusuario], references: [idusuario])
+  comunidad      Comunidad       @relation(fields: [idcomunidad], references: [idcomunidad])
+
+  @@unique([idusuario, idcomunidad])
+  @@map("membresias_comunidad")
 }
 
 model Usuario {
-  idusuario     Int            @id @default(autoincrement())
-  nombre        String         @db.VarChar(100)
-  correo        String         @unique @db.VarChar(225)
-  telefono      String         @db.VarChar(75)
-  contrasena    String         @db.VarChar(255)
-  fecharegistro DateTime       @default(now())
-  isactive      Int            @db.SmallInt
-  fotousuario   Bytes?
-  verifytoken   String?        @db.VarChar(255)
+  idusuario         Int                  @id @default(autoincrement())
+  nombre            String               @db.VarChar(100)
+  correo            String               @unique @db.VarChar(225)
+  telefono          String               @db.VarChar(75)
+  contrasena        String               @db.VarChar(255)
+  rolapp            RolApp               @default(USER)
+  fecharegistro     DateTime             @default(now())
+  isactive          Int                  @db.SmallInt
+  fotousuario       Bytes?
+  verifytoken       String?              @db.VarChar(255)
   verifytokenexpiry DateTime?
-  productos     Producto[]
-  compras       Transaccion[]  @relation("Comprador")
-  ventas        Transaccion[]  @relation("Vendedor")
+  membresias        MembresiaComunidad[]
+  productos         Producto[]
+  compras           Transaccion[]        @relation("Comprador")
+  ventas            Transaccion[]        @relation("Vendedor")
 
   @@map("usuarios")
 }
 
 model Producto {
-  idproducto       Int            @id @default(autoincrement())
+  idproducto       Int                   @id @default(autoincrement())
   idusuario        Int
   idcategoria      Int
   iddisponibilidad Int
-  nombreproducto   String         @db.VarChar(100)
+  nombreproducto   String                @db.VarChar(100)
   descripcion      String?
-  precio           Decimal        @db.Decimal(10, 2)
+  precio           Decimal               @db.Decimal(10, 2)
   stock            Int
-  fechapublicacion DateTime       @default(now())
-  isactive         Int            @db.SmallInt
+  fechapublicacion DateTime              @default(now())
+  isactive         Int                   @db.SmallInt
   fotoproducto     Bytes?
-  fotourl          String?        @db.VarChar(500)
-  vendedor         Usuario        @relation(fields: [idusuario], references: [idusuario])
-  categoria        Categoria      @relation(fields: [idcategoria], references: [idcategoria])
-  disponibilidad   Disponibilidad @relation(fields: [iddisponibilidad], references: [iddisponibilidad])
+  fotourl          String?               @db.VarChar(500)
+  vendedor         Usuario               @relation(fields: [idusuario], references: [idusuario])
+  categoria        Categoria             @relation(fields: [idcategoria], references: [idcategoria])
+  disponibilidad   Disponibilidad        @relation(fields: [iddisponibilidad], references: [iddisponibilidad])
+  publicaciones    PublicacionProducto[]
   transacciones    Transaccion[]
 
   @@map("producto")
+}
+
+model PublicacionProducto {
+  idpublicacion    Int       @id @default(autoincrement())
+  idproducto       Int
+  idcomunidad      Int
+  isactive         Int       @default(1) @db.SmallInt
+  fechapublicacion DateTime  @default(now())
+  producto         Producto  @relation(fields: [idproducto], references: [idproducto])
+  comunidad        Comunidad @relation(fields: [idcomunidad], references: [idcomunidad])
+
+  @@unique([idproducto, idcomunidad])
+  @@map("publicaciones_producto")
 }
 
 model Categoria {
@@ -83,6 +147,7 @@ model Transaccion {
   idcomprador      Int
   idvendedor       Int
   idproducto       Int
+  idcomunidad      Int?
   idestado         Int
   idmetodopago     Int
   cantidad         Int
@@ -92,6 +157,7 @@ model Transaccion {
   comprador        Usuario           @relation("Comprador", fields: [idcomprador], references: [idusuario])
   vendedor         Usuario           @relation("Vendedor", fields: [idvendedor], references: [idusuario])
   producto         Producto          @relation(fields: [idproducto], references: [idproducto])
+  comunidad        Comunidad?        @relation(fields: [idcomunidad], references: [idcomunidad])
   estado           EstadoTransaccion @relation(fields: [idestado], references: [idestado])
   metodopago       MetodoPago        @relation(fields: [idmetodopago], references: [idmetodopago])
   valoraciones     Valoracion[]
@@ -100,12 +166,12 @@ model Transaccion {
 }
 
 model Valoracion {
-  idvaloracion   Int         @id @default(autoincrement())
-  idtransaccion  Int
-  calificacion   Int
-  comentario     String
-  fechavaloracion DateTime   @default(now())
-  transaccion    Transaccion @relation(fields: [idtransaccion], references: [idtransaccion])
+  idvaloracion    Int         @id @default(autoincrement())
+  idtransaccion   Int
+  calificacion    Int
+  comentario      String
+  fechavaloracion DateTime    @default(now())
+  transaccion     Transaccion @relation(fields: [idtransaccion], references: [idtransaccion])
 
   @@map("valoraciones")
 }

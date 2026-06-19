@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Providers from "@/components/Providers";
 import "@/styles/globals.css";
 
@@ -8,12 +8,15 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   icons: {
     icon: [
-      { url: "/icons/favicon-96x96.png", sizes: "96x96", type: "image/png" },
-      { url: "/icons/favicon.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
     ],
-    shortcut: "/icons/favicon.ico",
-    apple: "/icons/apple-touch-icon.png",
+    apple: "/icons/icon-152x152.png",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#231f39",
 };
 
 export default function RootLayout({
@@ -24,9 +27,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

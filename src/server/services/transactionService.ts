@@ -23,7 +23,7 @@ export async function createTransaction(data: {
       preciototal: data.preciototal,
       fechatransaccion: new Date(),
       isactive: 1,
-    }
+    },
   })
 }
 
@@ -54,6 +54,13 @@ export async function getSalesByUser(idvendedor: number) {
       comprador: { select: { nombre: true, telefono: true } },
     },
     orderBy: { fechatransaccion: "desc" }
+  })
+}
+
+export async function getTransactionById(idtransaccion: number) {
+  return prisma.transaccion.findUnique({
+    where: { idtransaccion },
+    select: { idtransaccion: true, idvendedor: true, idcomprador: true, cantidad: true, idproducto: true }
   })
 }
 

@@ -25,9 +25,5 @@ export async function updateUserAction(data: UpdateUserInput) {
   const result = await updateUser(Number(session.user.id), data)
   if (result && 'error' in result) return { error: result.error }
 
-  if (data.nombre) {
-    await unstable_update({ user: { name: data.nombre } })
-  }
-
-  return { success: true }
+  return { success: true, nombre: data.nombre, telefono: data.telefono }
 }

@@ -1,7 +1,7 @@
 import NextAuth, { CredentialsSignin } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
-import { getUsersByEmail } from "@/server/services/userService"
+import { getUsersByEmail, setUserPasswordHash } from "@/server/services/userService"
 import { authConfig } from "./authConfig"
 
 class NoVerificadoError extends CredentialsSignin {
@@ -21,13 +21,22 @@ export const { auth, signIn, signOut, handlers, unstable_update } = NextAuth({
         try {
           if (!credentials?.correo || !credentials?.contrasena) return null
 
-          const usuario = await getUsersByEmail(credentials.correo as string)
+          const correo = String(credentials.correo).trim().toLowerCase()
+          const contrasena = String(credentials.contrasena)
+
+          const usuario = await getUsersByEmail(correo)
           if (!usuario) return null
 
-          const passwordValida = await bcrypt.compare(
-            credentials.contrasena as string,
-            usuario.contrasena
-          )
+          let passwordValida = await bcrypt.compare(contrasena, usuario.contrasena)
+
+          // Compatibilidad para cuentas migradas con contraseña en texto plano.
+          if (!passwordValida && !usuario.contrasena.startsWith("$2")) {
+            passwordValida = usuario.contrasena === contrasena
+            if (passwordValida) {
+              await setUserPasswordHash(usuario.idusuario, contrasena)
+            }
+          }
+
           if (!passwordValida) return null
 
           if (usuario.isactive === 0) {
@@ -38,6 +47,7 @@ export const { auth, signIn, signOut, handlers, unstable_update } = NextAuth({
             id: String(usuario.idusuario),
             name: usuario.nombre,
             email: usuario.correo,
+            rolapp: usuario.rolapp,
           }
         } catch (error) {
           if (error instanceof NoVerificadoError) throw error
@@ -47,10 +57,4 @@ export const { auth, signIn, signOut, handlers, unstable_update } = NextAuth({
       }
     })
   ],
-  callbacks: {
-    session({ session, token }) {
-      session.user.id = token.sub!
-      return session
-    }
-  }
 })

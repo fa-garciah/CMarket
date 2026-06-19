@@ -1,42 +1,169 @@
-import { getProducts } from "@/server/services/productService"
 import { auth } from "@/server/auth"
-import ProductsGrid from "@/features/products/components/ProductsGrid"
+import { getComunidadesAprobadasByUser } from "@/server/services/membresiaService"
+import {
+  getProductosDeMisComunidades,
+  getProducts,
+  getUserProductCount,
+} from "@/server/services/productService"
+import ProductCard from "@/features/products/components/ProductCard"
+import ComunidadesFilter from "@/features/products/components/ComunidadesFilter"
+import Link from "next/link"
+import { PlusCircle, Users, Package } from "lucide-react"
 
 export default async function Page({
-  searchParams
+  searchParams,
 }: {
-  searchParams: Promise<{ search?: string, category?: string }>
+  searchParams: Promise<{ search?: string; category?: string; com?: string }>
 }) {
-  const { search, category } = await searchParams
+  const { search, category, com } = await searchParams
+  const session = await auth()
+  const userId = Number(session?.user?.id)
 
-  const [products, session] = await Promise.all([
-    getProducts(),
-    auth()
+  const [comunidades, misProductosCount] = await Promise.all([
+    getComunidadesAprobadasByUser(userId),
+    getUserProductCount(userId),
   ])
 
-  const serializedProducts = products.map((prod) => ({
-    ...prod,
-    precio: Number(prod.precio),
-    fotoproducto: prod.fotoproducto ? true : false,
-    fechapublicacion: prod.fechapublicacion.toISOString(),
-  }))
+  const hasComunidades = comunidades.length > 0
+  const selectedComs = com ? com.split(",").filter(Boolean) : []
 
-  const filteredProducts = serializedProducts.filter(prod => {
-    const matchesSearch = search
-      ? prod.nombreproducto.toLowerCase().includes(search.toLowerCase())
+  const rawProducts = hasComunidades
+    ? await getProductosDeMisComunidades(userId)
+    : (await getProducts()).map((p) => ({
+        idproducto:     p.idproducto,
+        nombreproducto: p.nombreproducto,
+        precio:         Number(p.precio),
+        fotoproducto:   !!p.fotoproducto,
+        fotourl:        p.fotourl,
+        vendedor:       p.vendedor,
+        categoria:      p.categoria,
+        comunidades:    [] as { nombre: string; slug: string }[],
+      }))
+
+  const productos = rawProducts.filter((p) => {
+    const matchSearch = search
+      ? p.nombreproducto.toLowerCase().includes(search.toLowerCase())
       : true
-
-    const matchesCategory = category
-      ? prod.categoria.nombrecategoria.toLowerCase() === category.toLowerCase()
+    const matchCategory = category
+      ? p.categoria.nombrecategoria.toLowerCase() === category.toLowerCase()
       : true
-
-    return matchesSearch && matchesCategory
+    const matchCom = selectedComs.length > 0
+      ? p.comunidades.some((c) => selectedComs.includes(c.slug))
+      : true
+    return matchSearch && matchCategory && matchCom
   })
 
+  const firstName = session?.user?.name?.split(" ")[0] ?? "Usuario"
+
   return (
-    <ProductsGrid
-      products={filteredProducts}
-      userName={session?.user?.name}
-    />
+    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+
+      {/* Header + stats */}
+      <section className="mb-8 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-8">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-widest text-gray-400">Inicio</p>
+            <h1 className="mt-1 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
+              ¡Hola, {firstName}!
+            </h1>
+            <p className="mt-1 text-sm text-gray-500">
+              {hasComunidades
+                ? "Aquí están los artículos de tus comunidades."
+                : "Únete a una comunidad para ver artículos personalizados."}
+            </p>
+          </div>
+          <div className="grid grid-cols-3 divide-x divide-gray-100 overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
+            <div className="px-3 py-3 text-center sm:px-5 sm:py-4">
+              <p className="text-[9px] font-medium uppercase tracking-widest text-gray-400 sm:text-[10px]">Comunidades</p>
+              <p className="mt-1 text-xl font-black text-violet-600 sm:text-2xl">{comunidades.length}</p>
+            </div>
+            <div className="px-3 py-3 text-center sm:px-5 sm:py-4">
+              <p className="text-[9px] font-medium uppercase tracking-widest text-gray-400 sm:text-[10px]">Mis productos</p>
+              <p className="mt-1 text-xl font-black text-gray-900 sm:text-2xl">{misProductosCount}</p>
+            </div>
+            <div className="px-3 py-3 text-center sm:px-5 sm:py-4">
+              <p className="text-[9px] font-medium uppercase tracking-widest text-gray-400 sm:text-[10px]">Artículos</p>
+              <p className="mt-1 text-xl font-black text-gray-900 sm:text-2xl">{productos.length}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Communities row + filter */}
+      <section className="mb-8">
+        <div className="mb-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Users size={13} className="text-gray-400" />
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+              Mis comunidades
+            </h2>
+          </div>
+          <Link
+            href="/mis-comunidades"
+            className="text-xs font-semibold text-violet-600 transition-colors hover:text-violet-800"
+          >
+            Ver todas →
+          </Link>
+        </div>
+        <ComunidadesFilter
+          comunidades={comunidades}
+          selected={selectedComs}
+          currentSearch={search}
+          currentCategory={category}
+        />
+        {comunidades.length === 0 && (
+          <Link
+            href="/mis-comunidades"
+            className="inline-flex shrink-0 rounded-xl border border-dashed border-gray-300 px-5 py-3 transition hover:border-violet-400 hover:bg-violet-50"
+          >
+            <p className="text-sm font-semibold text-gray-400">+ Unirse a comunidad</p>
+          </Link>
+        )}
+      </section>
+
+      {/* Products */}
+      <section>
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Package size={13} className="text-gray-400" />
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+              {hasComunidades ? "Artículos en tus comunidades" : "Catálogo general"}
+            </h2>
+          </div>
+          <Link
+            href="/agregar-producto"
+            className="flex items-center gap-1.5 rounded-xl bg-violet-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-violet-700"
+          >
+            <PlusCircle size={13} />
+            Publicar
+          </Link>
+        </div>
+
+        {productos.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-gray-300 bg-white py-16 text-center shadow-sm">
+            {hasComunidades ? (
+              <>
+                <p className="font-semibold text-gray-700">
+                  {selectedComs.length > 0
+                    ? "No hay artículos en las comunidades seleccionadas."
+                    : "No hay artículos publicados en tus comunidades aún."}
+                </p>
+                <p className="mt-1 text-sm text-gray-400">
+                  {selectedComs.length > 0 ? "Prueba seleccionando otras comunidades." : "Sé el primero en publicar algo."}
+                </p>
+              </>
+            ) : (
+              <p className="font-semibold text-gray-700">No se encontraron productos.</p>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {productos.map((prod) => (
+              <ProductCard key={prod.idproducto} {...prod} />
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
   )
 }
