@@ -120,7 +120,7 @@ export default function MasterSidebar({ nombre }: { nombre: string }) {
                 href={href}
                 icon={icon}
                 label={label}
-                active={exact ? pathname === href : pathname.startsWith(href)}
+                active={href ? (exact ? pathname === href : pathname.startsWith(href)) : false}
               />
             ))}
         {open && (

@@ -4,7 +4,24 @@ import { Building2, Plus } from "lucide-react"
 import ComunidadesTable from "@/features/master/components/ComunidadesTable"
 
 export default async function ComunidadesPage() {
-  const comunidades = await getComunidadesAction()
+  const raw = await getComunidadesAction()
+
+  // Serialize Date fields so they can be passed to the client component ComunidadesTable
+  const comunidades = raw.map((c) => {
+    const anyC = c as Record<string, unknown>
+    return {
+      idcomunidad:      c.idcomunidad,
+      nombre:           c.nombre,
+      descripcion:      c.descripcion ?? null,
+      slug:             c.slug,
+      isactive:         c.isactive,
+      _count:           c._count,
+      codigoinvitacion: (anyC.codigoinvitacion as string | null | undefined) ?? null,
+      codigoexpiracion: anyC.codigoexpiracion instanceof Date
+        ? (anyC.codigoexpiracion as Date).toISOString()
+        : (anyC.codigoexpiracion as string | null | undefined) ?? null,
+    }
+  })
 
   return (
     <div>
