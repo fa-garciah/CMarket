@@ -3,16 +3,17 @@ import { verifyEmail } from "@/server/services/userService"
 
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token")
+  const base = (process.env.NEXTAUTH_URL ?? process.env.AUTH_URL ?? req.nextUrl.origin).replace(/\/$/, "")
 
   if (!token) {
-    return NextResponse.redirect(new URL("/login?error=token-invalido", req.url))
+    return NextResponse.redirect(`${base}/login?error=token-invalido`)
   }
 
   const result = await verifyEmail(token)
 
   if ("error" in result) {
-    return NextResponse.redirect(new URL(`/login?error=${result.error}`, req.url))
+    return NextResponse.redirect(`${base}/login?error=${result.error}`)
   }
 
-  return NextResponse.redirect(new URL("/login?verified=true", req.url))
+  return NextResponse.redirect(`${base}/login?verified=true`)
 }
