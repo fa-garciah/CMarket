@@ -1,8 +1,8 @@
 "use client"
 
-import { Fragment, useState } from "react"
+import { Fragment } from "react"
+import Link from "next/link"
 import ToggleComunidadButton from "@/features/master/components/ToggleComunidadButton"
-import EditComunidadForm from "@/features/master/components/EditComunidadForm"
 import InviteCodeCell from "@/features/master/components/InviteCodeCell"
 
 type ComunidadTableItem = {
@@ -21,24 +21,11 @@ type ComunidadesTableProps = {
 }
 
 export default function ComunidadesTable({ comunidades }: ComunidadesTableProps) {
-  const [rows, setRows] = useState(comunidades)
-  const [editingId, setEditingId] = useState<number | null>(null)
-
-  function handleSaved(idcomunidad: number, data: { nombre: string; descripcion?: string }) {
-    setRows((current) =>
-      current.map((comunidad) =>
-        comunidad.idcomunidad === idcomunidad
-          ? { ...comunidad, nombre: data.nombre, descripcion: data.descripcion ?? null }
-          : comunidad
-      )
-    )
-    setEditingId(null)
-  }
-
   return (
     <div className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+      {/* Mobile cards */}
       <div className="space-y-4 p-4 md:hidden">
-        {rows.map((comunidad) => (
+        {comunidades.map((comunidad) => (
           <div key={comunidad.idcomunidad} className="rounded-3xl border border-gray-100 bg-gray-50 p-4 shadow-sm">
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between gap-3">
@@ -74,11 +61,21 @@ export default function ComunidadesTable({ comunidades }: ComunidadesTableProps)
                   />
                 </div>
               </div>
+              <div className="flex items-center gap-2 pt-1">
+                <Link
+                  href={`/master/comunidades/editar/${comunidad.slug}`}
+                  className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-medium text-violet-700 transition hover:bg-violet-100"
+                >
+                  Editar
+                </Link>
+                <ToggleComunidadButton idcomunidad={comunidad.idcomunidad} isactive={comunidad.isactive} />
+              </div>
             </div>
           </div>
         ))}
       </div>
 
+      {/* Desktop table */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full min-w-[720px] text-sm">
           <thead>
@@ -92,11 +89,9 @@ export default function ComunidadesTable({ comunidades }: ComunidadesTableProps)
             </tr>
           </thead>
           <tbody>
-            {rows.map((comunidad, index) => (
+            {comunidades.map((comunidad, index) => (
               <Fragment key={comunidad.idcomunidad}>
-                <tr
-                  className={`border-b border-gray-50 last:border-0 ${index % 2 !== 0 ? "bg-gray-50/50" : ""}`}
-                >
+                <tr className={`border-b border-gray-50 last:border-0 ${index % 2 !== 0 ? "bg-gray-50/50" : ""}`}>
                   <td className="px-5 py-4">
                     <p className="font-medium text-gray-800">{comunidad.nombre}</p>
                     {comunidad.descripcion && (
@@ -113,39 +108,22 @@ export default function ComunidadesTable({ comunidades }: ComunidadesTableProps)
                     />
                   </td>
                   <td className="px-5 py-4">
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                        comunidad.isactive === 1 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"
-                      }`}
-                    >
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                      comunidad.isactive === 1 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"
+                    }`}>
                       {comunidad.isactive === 1 ? "Activa" : "Inactiva"}
                     </span>
                   </td>
                   <td className="px-5 py-4 flex items-center gap-2 justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setEditingId(editingId === comunidad.idcomunidad ? null : comunidad.idcomunidad)}
+                    <Link
+                      href={`/master/comunidades/editar/${comunidad.slug}`}
                       className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-medium text-violet-700 transition hover:bg-violet-100"
                     >
                       Editar
-                    </button>
+                    </Link>
                     <ToggleComunidadButton idcomunidad={comunidad.idcomunidad} isactive={comunidad.isactive} />
                   </td>
                 </tr>
-
-                {editingId === comunidad.idcomunidad && (
-                  <tr className="bg-gray-50">
-                    <td colSpan={6} className="px-5 py-5 border-b border-gray-200">
-                      <EditComunidadForm
-                        idcomunidad={comunidad.idcomunidad}
-                        nombre={comunidad.nombre}
-                        descripcion={comunidad.descripcion ?? undefined}
-                        onCancel={() => setEditingId(null)}
-                        onSaved={(data) => handleSaved(comunidad.idcomunidad, data)}
-                      />
-                    </td>
-                  </tr>
-                )}
               </Fragment>
             ))}
           </tbody>

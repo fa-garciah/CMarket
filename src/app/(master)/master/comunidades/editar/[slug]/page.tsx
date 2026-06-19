@@ -1,7 +1,9 @@
-import EditComunidadForm from "@/features/master/components/EditComunidadForm"
+import EditComunidadPageWrapper from "@/features/master/components/EditComunidadPageWrapper"
+import MiembrosAdminPanel from "@/features/master/components/MiembrosAdminPanel"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { getComunidadBySlug } from "@/server/services/comunidadService"
+import { getMiembrosComunidadAction, getUsuariosListAction } from "@/features/master/actions"
 import { notFound } from "next/navigation"
 
 export default async function EditarComunidadPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -9,13 +11,15 @@ export default async function EditarComunidadPage({ params }: { params: Promise<
   if (!slug) notFound()
 
   const comunidad = await getComunidadBySlug(slug)
+  if (!comunidad) notFound()
 
-  if (!comunidad) {
-    notFound()
-  }
+  const [miembros, usuarios] = await Promise.all([
+    getMiembrosComunidadAction(comunidad.idcomunidad),
+    getUsuariosListAction(),
+  ])
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-3xl">
       <Link
         href="/master/comunidades"
         className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 mb-6 transition-colors"
@@ -29,14 +33,16 @@ export default async function EditarComunidadPage({ params }: { params: Promise<
         Ajusta el nombre o la descripción de esta comunidad.
       </p>
 
-      <EditComunidadForm
+      <EditComunidadPageWrapper
         idcomunidad={comunidad.idcomunidad}
         nombre={comunidad.nombre}
         descripcion={comunidad.descripcion}
-        onCancel={() => undefined}
-        onSaved={() => {
-          window.location.href = "/master/comunidades"
-        }}
+      />
+
+      <MiembrosAdminPanel
+        idcomunidad={comunidad.idcomunidad}
+        miembros={miembros}
+        usuarios={usuarios}
       />
     </div>
   )

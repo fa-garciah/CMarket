@@ -3,6 +3,7 @@
 import { auth } from "@/server/auth"
 import { redirect } from "next/navigation"
 import { getComunidades, createComunidad, updateComunidad, generateInviteCode, revokeInviteCode } from "@/server/services/comunidadService"
+import { getMiembrosByComunidad, setRolComunidad, addMiembroDirecto, removeMiembro } from "@/server/services/membresiaService"
 import { getAllUsuarios, createUserByMaster, getUserById, updateUser } from "@/server/services/userService"
 import { prisma } from "@/server/db/db"
 import { UpdateUserAdminInput } from "@/types/auth.types"
@@ -114,6 +115,28 @@ export async function createUserMasterAction(data: CreateUserMasterInput) {
   const parsed = createUserMasterSchema.safeParse(data)
   if (!parsed.success) return { error: parsed.error.issues[0].message }
   return createUserByMaster(parsed.data)
+}
+
+// --- Miembros de comunidad ---
+
+export async function getMiembrosComunidadAction(idcomunidad: number) {
+  await requireMaster()
+  return getMiembrosByComunidad(idcomunidad)
+}
+
+export async function setRolComunidadAction(idmembresia: number, rol: "ADMIN" | "USER") {
+  await requireMaster()
+  return setRolComunidad(idmembresia, rol)
+}
+
+export async function addMiembroDirectoAction(idusuario: number, idcomunidad: number, rol: "ADMIN" | "USER") {
+  await requireMaster()
+  return addMiembroDirecto(idusuario, idcomunidad, rol)
+}
+
+export async function removeMiembroAction(idmembresia: number) {
+  await requireMaster()
+  return removeMiembro(idmembresia)
 }
 
 // --- Códigos de invitación ---

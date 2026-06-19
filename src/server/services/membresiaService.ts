@@ -41,6 +41,38 @@ export async function getMiembrosByComunidad(idcomunidad: number) {
   })
 }
 
+export async function setRolComunidad(idmembresia: number, rol: "ADMIN" | "USER") {
+  await prisma.membresiaComunidad.update({
+    where: { idmembresia },
+    data: { rol },
+  })
+  return { ok: true }
+}
+
+export async function addMiembroDirecto(
+  idusuario: number,
+  idcomunidad: number,
+  rol: "ADMIN" | "USER",
+) {
+  const existing = await getMembresiaByUserAndComunidad(idusuario, idcomunidad)
+  if (existing) {
+    await prisma.membresiaComunidad.update({
+      where: { idmembresia: existing.idmembresia },
+      data: { estado: "APROBADA", rol },
+    })
+  } else {
+    await prisma.membresiaComunidad.create({
+      data: { idusuario, idcomunidad, rol, estado: "APROBADA" },
+    })
+  }
+  return { ok: true }
+}
+
+export async function removeMiembro(idmembresia: number) {
+  await prisma.membresiaComunidad.delete({ where: { idmembresia } })
+  return { ok: true }
+}
+
 export async function updateMembresiaEstado(
   idmembresia: number,
   estado: "APROBADA" | "RECHAZADA" | "BLOQUEADA" | "PENDIENTE",
