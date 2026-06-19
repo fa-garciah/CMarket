@@ -35,10 +35,10 @@ export default async function ProfilePage({
   })
 
   return (
-    <div className="mx-auto w-full max-w-7xl p-6 sm:p-8 lg:p-10">
+    <div className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-10">
       {updated && (
         <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-center text-sm font-semibold text-emerald-700">
-          Perfil actualizado. Los cambios de nombre se verán al cerrar sesión y volver a entrar.
+          Perfil actualizado correctamente.
         </div>
       )}
       {purchased && (
@@ -49,7 +49,7 @@ export default async function ProfilePage({
 
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-gray-900">Mis Productos</h1>
+          <h1 className="text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">Mis Productos</h1>
           <p className="mt-1 text-sm text-gray-500">
             {filtered.length} de {serialized.length} {serialized.length === 1 ? "artículo" : "artículos"}
           </p>

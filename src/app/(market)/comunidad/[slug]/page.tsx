@@ -138,38 +138,39 @@ function PageWrapper({
   children: React.ReactNode
 }) {
   return (
-    <div className="mx-auto w-full max-w-6xl p-6 sm:p-8 lg:p-10">
+    <div className="mx-auto w-full max-w-6xl p-4 sm:p-6 lg:p-10">
       {/* Header */}
-      <div className="mb-8 rounded-2xl bg-white border border-gray-200 shadow-sm p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-50 border border-violet-100">
-              <Building2 size={24} className="text-violet-600" />
+      <div className="mb-6 rounded-2xl bg-white border border-gray-200 shadow-sm p-4 sm:p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 border border-violet-100 sm:h-12 sm:w-12">
+              <Building2 size={20} className="text-violet-600 sm:hidden" />
+              <Building2 size={24} className="text-violet-600 hidden sm:block" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-black tracking-tight text-gray-900">{comunidad.nombre}</h1>
-                {isAdmin && (
-                  <a
-                    href={`/comunidad/${comunidad.slug ?? ""}/admin`}
-                    className="inline-flex items-center gap-1 rounded-full bg-violet-50 border border-violet-200 px-2.5 py-0.5 text-[11px] font-semibold text-violet-700 hover:bg-violet-100 transition-colors"
-                  >
-                    <Crown size={10} />
-                    Admin
-                  </a>
-                )}
-              </div>
+            <div className="min-w-0">
+              <h1 className="text-xl font-black tracking-tight text-gray-900 sm:text-2xl">{comunidad.nombre}</h1>
               {comunidad.descripcion && (
-                <p className="mt-0.5 text-sm text-gray-500">{comunidad.descripcion}</p>
+                <p className="mt-0.5 text-sm text-gray-500 line-clamp-2">{comunidad.descripcion}</p>
               )}
             </div>
           </div>
-          {memberCount !== undefined && (
-            <div className="flex items-center gap-1.5 text-sm text-gray-400 shrink-0">
-              <Users size={14} />
-              <span>{memberCount} miembro{memberCount !== 1 ? "s" : ""}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-3 sm:flex-col sm:items-end sm:gap-2">
+            {memberCount !== undefined && (
+              <div className="flex items-center gap-1.5 text-sm text-gray-400 shrink-0">
+                <Users size={14} />
+                <span>{memberCount} miembro{memberCount !== 1 ? "s" : ""}</span>
+              </div>
+            )}
+            {isAdmin && (
+              <a
+                href={`/comunidad/${comunidad.slug ?? ""}/admin`}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-violet-700 transition-colors shrink-0"
+              >
+                <Crown size={12} />
+                Administrar
+              </a>
+            )}
+          </div>
         </div>
       </div>
 

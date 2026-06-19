@@ -33,9 +33,9 @@ export default async function TransaccionesPage() {
   }))
 
   return (
-    <div className="mx-auto w-full max-w-4xl p-6 sm:p-8 lg:p-10">
+    <div className="mx-auto w-full max-w-4xl p-4 sm:p-6 lg:p-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-black tracking-tight text-gray-900">Transacciones</h1>
+        <h1 className="text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">Transacciones</h1>
         <p className="mt-1 text-sm text-gray-500">Tus ventas y compras</p>
       </div>
 
@@ -47,7 +47,7 @@ export default async function TransaccionesPage() {
       {/* Compras */}
       <section>
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">Historial de Compras</h2>
+          <h2 className="text-base font-black text-gray-900 uppercase tracking-tight sm:text-xl">Historial de Compras</h2>
           <span className="bg-violet-50 text-violet-700 border border-violet-200 px-3 py-0.5 rounded-full text-xs font-bold">
             {comprasSerialized.length} compras
           </span>

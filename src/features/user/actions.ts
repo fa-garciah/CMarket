@@ -2,7 +2,11 @@
 
 import { auth } from "@/server/auth"
 import { redirect } from "next/navigation"
-import { getComunidadByCodigoInvitacion } from "@/server/services/comunidadService"
+import {
+  getComunidadByCodigoInvitacion,
+  generateInviteCode,
+  revokeInviteCode,
+} from "@/server/services/comunidadService"
 import {
   solicitarUnirse,
   getMembresiaById,
@@ -50,4 +54,30 @@ export async function updateMembresiaEstadoAction(
   }
 
   return updateMembresiaEstado(idmembresia, estado)
+}
+
+async function requireComunidadAdmin(idcomunidad: number) {
+  const session = await auth()
+  if (!session) redirect("/login")
+  const membresia = await getMembresiaByUserAndComunidad(Number(session.user.id), idcomunidad)
+  if (!membresia || membresia.rol !== "ADMIN" || membresia.estado !== "APROBADA") {
+    return { error: "No tienes permisos de administrador en esta comunidad" }
+  }
+  return null
+}
+
+export async function generateComunidadInviteCodeAction(idcomunidad: number, horas: number) {
+  const err = await requireComunidadAdmin(idcomunidad)
+  if (err) return err as { error: string }
+  const result = await generateInviteCode(idcomunidad, horas)
+  return {
+    codigoinvitacion: result.codigoinvitacion,
+    codigoexpiracion: result.codigoexpiracion?.toISOString() ?? null,
+  }
+}
+
+export async function revokeComunidadInviteCodeAction(idcomunidad: number) {
+  const err = await requireComunidadAdmin(idcomunidad)
+  if (err) return err as { error: string }
+  return revokeInviteCode(idcomunidad)
 }

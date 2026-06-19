@@ -99,7 +99,7 @@ export default function ProductForm({ categorias, disponibilidades, userId }: Pr
           {errors.descripcion && <p className="mt-1 ml-1 text-xs text-red-500">{errors.descripcion.message}</p>}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className={labelClass}>Categoría</label>
             <select {...register("idcategoria", { valueAsNumber: true })} className={inputClass}>

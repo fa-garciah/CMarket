@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation"
 import { ArrowLeft, Clock, CheckCircle2, XCircle, ShieldX } from "lucide-react"
 import Link from "next/link"
 import MemberActions from "./MemberActions"
+import ComunidadInviteCodePanel from "@/features/comunidad/components/ComunidadInviteCodePanel"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -39,8 +40,13 @@ export default async function AdminComunidadPage({ params }: Props) {
   const bloqueados = miembros.filter((m) => m.estado === "BLOQUEADA")
   const rechazados = miembros.filter((m) => m.estado === "RECHAZADA")
 
+  const com = comunidad as typeof comunidad & {
+    codigoinvitacion: string | null
+    codigoexpiracion: Date | null
+  }
+
   return (
-    <div className="mx-auto w-full max-w-3xl p-6 sm:p-8 lg:p-10">
+    <div className="mx-auto w-full max-w-3xl p-4 sm:p-6 lg:p-10">
 
       {/* Header */}
       <div className="mb-8">
@@ -51,9 +57,16 @@ export default async function AdminComunidadPage({ params }: Props) {
           <ArrowLeft size={14} />
           Volver a {comunidad.nombre}
         </Link>
-        <h1 className="text-2xl font-black tracking-tight text-gray-900">Panel de administración</h1>
+        <h1 className="text-xl font-black tracking-tight text-gray-900 sm:text-2xl">Panel de administración</h1>
         <p className="mt-1 text-sm text-gray-500">{comunidad.nombre}</p>
       </div>
+
+      {/* Invite code */}
+      <ComunidadInviteCodePanel
+        idcomunidad={comunidad.idcomunidad}
+        codigoinvitacion={com.codigoinvitacion}
+        codigoexpiracion={com.codigoexpiracion?.toISOString() ?? null}
+      />
 
       {/* Pending */}
       <Section

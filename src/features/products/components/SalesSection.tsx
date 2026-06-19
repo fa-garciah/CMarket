@@ -58,7 +58,7 @@ export default function SalesSection({ ventas }: Props) {
       {/* Interesados */}
       <section>
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">Interesados</h2>
+          <h2 className="text-base font-black text-gray-900 uppercase tracking-tight sm:text-xl">Interesados</h2>
           <span className="bg-amber-50 text-amber-600 border border-amber-200 px-3 py-0.5 rounded-full text-xs font-bold">
             {ventasPendientes.length} pendientes
           </span>
@@ -119,7 +119,7 @@ export default function SalesSection({ ventas }: Props) {
       {/* Historial de ventas */}
       <section>
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">Historial de Ventas</h2>
+          <h2 className="text-base font-black text-gray-900 uppercase tracking-tight sm:text-xl">Historial de Ventas</h2>
           <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-0.5 rounded-full text-xs font-bold">
             {ventasCompletadas.length} completadas
           </span>

@@ -102,7 +102,7 @@ export async function getUserProductCount(idusuario: number) {
   return prisma.producto.count({ where: { idusuario, isactive: 1 } })
 }
 
-export async function getProductosDeMisComunidades(idusuario: number, limit = 30) {
+export async function getProductosDeMisComunidades(idusuario: number, limit = 50) {
   const rows = await prisma.producto.findMany({
     where: {
       isactive: 1,
@@ -122,6 +122,13 @@ export async function getProductosDeMisComunidades(idusuario: number, limit = 30
       vendedor: { select: { nombre: true } },
       categoria: { select: { nombrecategoria: true } },
       disponibilidad: { select: { nombredisponibilidad: true } },
+      publicaciones: {
+        where: {
+          isactive: 1,
+          comunidad: { miembros: { some: { idusuario, estado: "APROBADA" } } },
+        },
+        select: { comunidad: { select: { nombre: true, slug: true } } },
+      },
     },
     orderBy: { fechapublicacion: "desc" },
     take: limit,
@@ -136,6 +143,7 @@ export async function getProductosDeMisComunidades(idusuario: number, limit = 30
       fotourl:        p.fotourl,
       vendedor:       p.vendedor,
       categoria:      p.categoria,
+      comunidades:    p.publicaciones.map((pub) => pub.comunidad),
     }))
 }
 

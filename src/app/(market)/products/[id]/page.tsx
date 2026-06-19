@@ -23,7 +23,7 @@ export default async function DetalleProductoPage({
   const esVendedor = Number(session?.user?.id) === producto.idusuario
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 py-8">
+    <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
       <Link
         href="/"
         className="mb-8 inline-flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-gray-900"
@@ -49,7 +49,7 @@ export default async function DetalleProductoPage({
 
         {/* Info */}
         <div className="w-full md:w-1/2">
-          <div className="flex flex-col gap-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+          <div className="flex flex-col gap-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-8">
 
             {/* Vendedor */}
             <div className="flex items-center gap-3">
@@ -64,8 +64,8 @@ export default async function DetalleProductoPage({
 
             {/* Nombre y precio */}
             <div>
-              <h1 className="text-3xl font-black uppercase tracking-tight text-gray-900">{producto.nombreproducto}</h1>
-              <p className="mt-2 text-3xl font-black text-violet-600">
+              <h1 className="text-2xl font-black uppercase tracking-tight text-gray-900 sm:text-3xl">{producto.nombreproducto}</h1>
+              <p className="mt-2 text-2xl font-black text-violet-600 sm:text-3xl">
                 ${Number(producto.precio).toLocaleString('es-MX')}
               </p>
             </div>

@@ -20,10 +20,10 @@ export default async function MisComunidadesPage() {
   const otras      = membresias.filter((m) => m.estado === "RECHAZADA" || m.estado === "BLOQUEADA")
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col p-6 sm:p-8 lg:p-10">
+    <div className="mx-auto flex w-full max-w-4xl flex-col p-4 sm:p-6 lg:p-10">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-gray-900">Mis Comunidades</h1>
+          <h1 className="text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">Mis Comunidades</h1>
           <p className="mt-1 text-sm text-gray-500">
             {aprobadas.length} comunidad{aprobadas.length !== 1 ? "es" : ""} activa{aprobadas.length !== 1 ? "s" : ""}
             {pendientes.length > 0 && ` · ${pendientes.length} pendiente${pendientes.length !== 1 ? "s" : ""}`}

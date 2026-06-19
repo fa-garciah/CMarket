@@ -6,15 +6,16 @@ import {
   getUserProductCount,
 } from "@/server/services/productService"
 import ProductCard from "@/features/products/components/ProductCard"
+import ComunidadesFilter from "@/features/products/components/ComunidadesFilter"
 import Link from "next/link"
 import { PlusCircle, Users, Package } from "lucide-react"
 
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; category?: string }>
+  searchParams: Promise<{ search?: string; category?: string; com?: string }>
 }) {
-  const { search, category } = await searchParams
+  const { search, category, com } = await searchParams
   const session = await auth()
   const userId = Number(session?.user?.id)
 
@@ -24,6 +25,7 @@ export default async function Page({
   ])
 
   const hasComunidades = comunidades.length > 0
+  const selectedComs = com ? com.split(",").filter(Boolean) : []
 
   const rawProducts = hasComunidades
     ? await getProductosDeMisComunidades(userId)
@@ -35,6 +37,7 @@ export default async function Page({
         fotourl:        p.fotourl,
         vendedor:       p.vendedor,
         categoria:      p.categoria,
+        comunidades:    [] as { nombre: string; slug: string }[],
       }))
 
   const productos = rawProducts.filter((p) => {
@@ -44,7 +47,10 @@ export default async function Page({
     const matchCategory = category
       ? p.categoria.nombrecategoria.toLowerCase() === category.toLowerCase()
       : true
-    return matchSearch && matchCategory
+    const matchCom = selectedComs.length > 0
+      ? p.comunidades.some((c) => selectedComs.includes(c.slug))
+      : true
+    return matchSearch && matchCategory && matchCom
   })
 
   const firstName = session?.user?.name?.split(" ")[0] ?? "Usuario"
@@ -53,11 +59,11 @@ export default async function Page({
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
       {/* Header + stats */}
-      <section className="mb-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+      <section className="mb-8 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-8">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-xs font-medium uppercase tracking-widest text-gray-400">Inicio</p>
-            <h1 className="mt-1 text-3xl font-black tracking-tight text-gray-900 sm:text-4xl">
+            <h1 className="mt-1 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
               ¡Hola, {firstName}!
             </h1>
             <p className="mt-1 text-sm text-gray-500">
@@ -67,23 +73,23 @@ export default async function Page({
             </p>
           </div>
           <div className="grid grid-cols-3 divide-x divide-gray-100 overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
-            <div className="px-5 py-4 text-center">
-              <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">Comunidades</p>
-              <p className="mt-1 text-2xl font-black text-violet-600">{comunidades.length}</p>
+            <div className="px-3 py-3 text-center sm:px-5 sm:py-4">
+              <p className="text-[9px] font-medium uppercase tracking-widest text-gray-400 sm:text-[10px]">Comunidades</p>
+              <p className="mt-1 text-xl font-black text-violet-600 sm:text-2xl">{comunidades.length}</p>
             </div>
-            <div className="px-5 py-4 text-center">
-              <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">Mis productos</p>
-              <p className="mt-1 text-2xl font-black text-gray-900">{misProductosCount}</p>
+            <div className="px-3 py-3 text-center sm:px-5 sm:py-4">
+              <p className="text-[9px] font-medium uppercase tracking-widest text-gray-400 sm:text-[10px]">Mis productos</p>
+              <p className="mt-1 text-xl font-black text-gray-900 sm:text-2xl">{misProductosCount}</p>
             </div>
-            <div className="px-5 py-4 text-center">
-              <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">Artículos</p>
-              <p className="mt-1 text-2xl font-black text-gray-900">{productos.length}</p>
+            <div className="px-3 py-3 text-center sm:px-5 sm:py-4">
+              <p className="text-[9px] font-medium uppercase tracking-widest text-gray-400 sm:text-[10px]">Artículos</p>
+              <p className="mt-1 text-xl font-black text-gray-900 sm:text-2xl">{productos.length}</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Communities row */}
+      {/* Communities row + filter */}
       <section className="mb-8">
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -99,24 +105,20 @@ export default async function Page({
             Ver todas →
           </Link>
         </div>
-        <div className="flex gap-3 overflow-x-auto pb-1">
-          {comunidades.map((com) => (
-            <Link
-              key={com.idcomunidad}
-              href={`/comunidad/${com.slug}`}
-              className="shrink-0 rounded-xl border border-gray-200 bg-white px-5 py-3 shadow-sm transition hover:border-violet-300 hover:shadow-md"
-            >
-              <p className="text-sm font-bold text-gray-800">{com.nombre}</p>
-              <p className="mt-0.5 text-xs text-violet-500">Ver artículos →</p>
-            </Link>
-          ))}
+        <ComunidadesFilter
+          comunidades={comunidades}
+          selected={selectedComs}
+          currentSearch={search}
+          currentCategory={category}
+        />
+        {comunidades.length === 0 && (
           <Link
             href="/mis-comunidades"
-            className="shrink-0 rounded-xl border border-dashed border-gray-300 px-5 py-3 transition hover:border-violet-400 hover:bg-violet-50"
+            className="inline-flex shrink-0 rounded-xl border border-dashed border-gray-300 px-5 py-3 transition hover:border-violet-400 hover:bg-violet-50"
           >
             <p className="text-sm font-semibold text-gray-400">+ Unirse a comunidad</p>
           </Link>
-        </div>
+        )}
       </section>
 
       {/* Products */}
@@ -142,28 +144,16 @@ export default async function Page({
             {hasComunidades ? (
               <>
                 <p className="font-semibold text-gray-700">
-                  No hay artículos publicados en tus comunidades aún.
+                  {selectedComs.length > 0
+                    ? "No hay artículos en las comunidades seleccionadas."
+                    : "No hay artículos publicados en tus comunidades aún."}
                 </p>
-                <p className="mt-1 text-sm text-gray-400">Sé el primero en publicar algo.</p>
-                <Link
-                  href="/agregar-producto"
-                  className="mt-5 inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700"
-                >
-                  <PlusCircle size={14} />
-                  Publicar producto
-                </Link>
+                <p className="mt-1 text-sm text-gray-400">
+                  {selectedComs.length > 0 ? "Prueba seleccionando otras comunidades." : "Sé el primero en publicar algo."}
+                </p>
               </>
             ) : (
-              <>
-                <p className="font-semibold text-gray-700">No se encontraron productos.</p>
-                <p className="mt-1 text-sm text-gray-400">
-                  Prueba con otra búsqueda o{" "}
-                  <Link href="/mis-comunidades" className="text-violet-600 hover:underline">
-                    únete a una comunidad
-                  </Link>
-                  .
-                </p>
-              </>
+              <p className="font-semibold text-gray-700">No se encontraron productos.</p>
             )}
           </div>
         ) : (

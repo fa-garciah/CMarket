@@ -43,7 +43,7 @@ export default function PublicarEnComunidades({ idproducto, comunidades, publica
   }
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
       <div className="mb-4 flex items-center gap-2">
         <Globe size={15} className="text-violet-500" />
         <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400">Publicar en comunidades</h2>

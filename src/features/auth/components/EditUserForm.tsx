@@ -4,11 +4,12 @@ import { useState } from "react"
 import Link from "next/link"
 import { UpdateUserInput } from "@/types/auth.types"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 type Props = {
   defaultNombre: string
   defaultTelefono: string
-  updateUserAction: (data: UpdateUserInput) => Promise<{ error: string | undefined } | { success: boolean } | void>
+  updateUserAction: (data: UpdateUserInput) => Promise<{ error: string | undefined } | { success: boolean; nombre?: string; telefono?: string } | void>
 }
 
 const inputClass = "w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-violet-500 focus:bg-white"
@@ -16,6 +17,7 @@ const labelClass = "mb-1.5 block text-sm font-medium text-gray-700"
 
 export default function EditUserForm({ defaultNombre, defaultTelefono, updateUserAction }: Props) {
   const router = useRouter()
+  const { update } = useSession()
   const { register, handleSubmit, formState: { errors } } = useForm<UpdateUserInput>({
     defaultValues: { nombre: defaultNombre, telefono: defaultTelefono }
   })
@@ -30,6 +32,9 @@ export default function EditUserForm({ defaultNombre, defaultTelefono, updateUse
       setServerError(result.error || "Error desconocido")
       setLoading(false)
     } else {
+      if (result && "success" in result) {
+        await update({ name: result.nombre, telefono: result.telefono })
+      }
       router.push("/profile?updated=true")
     }
   })

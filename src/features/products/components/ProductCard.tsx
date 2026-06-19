@@ -1,7 +1,7 @@
 import Link from "next/link"
 import type { ProductCardDTO } from "@/types/product.types"
 
-export default function ProductCard({ idproducto, nombreproducto, precio, fotoproducto, fotourl, vendedor, hideVerMas }: ProductCardDTO & { hideVerMas?: boolean }) {
+export default function ProductCard({ idproducto, nombreproducto, precio, fotoproducto, fotourl, vendedor, hideVerMas, comunidades }: ProductCardDTO & { hideVerMas?: boolean; comunidades?: { nombre: string; slug: string }[] }) {
   const imageSrc = fotourl
     ? fotourl
     : fotoproducto
@@ -36,6 +36,15 @@ export default function ProductCard({ idproducto, nombreproducto, precio, fotopr
               <span className="rounded-full bg-violet-50 border border-violet-100 px-2.5 py-1 text-[10px] uppercase tracking-widest text-violet-600 font-medium">Ver más</span>
             )}
           </div>
+          {comunidades && comunidades.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1">
+              {comunidades.map((c) => (
+                <span key={c.slug} className="rounded-full bg-gray-100 px-2 py-0.5 text-[9px] font-semibold text-gray-500">
+                  {c.nombre}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </article>
     </Link>
