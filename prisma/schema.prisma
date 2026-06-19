@@ -29,7 +29,8 @@ model Comunidad {
   nombre           String                @db.VarChar(120)
   slug             String                @unique @db.VarChar(120)
   descripcion      String?
-  codigoinvitacion String                @unique @default(uuid()) @db.VarChar(100)
+  codigoinvitacion String?               @unique @db.VarChar(100)
+  codigoexpiracion DateTime?
   fechacreacion    DateTime              @default(now())
   isactive         Int                   @default(1) @db.SmallInt
   miembros         MembresiaComunidad[]

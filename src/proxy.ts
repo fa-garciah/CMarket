@@ -1,9 +1,9 @@
-import NextAuth from "next-auth"
-import { authConfig } from "@/server/auth/authConfig"
+import NextAuth from "next-auth";
+import { authConfig } from "@/server/auth/authConfig";
 
-const { auth } = NextAuth(authConfig)
+const { auth } = NextAuth(authConfig);
 
-export default auth
+export default auth;
 
 export const config = {
   matcher: [
@@ -18,4 +18,4 @@ export const config = {
     "/mis-ventas",
     "/mis-ventas/:path*",
   ],
-}
+};

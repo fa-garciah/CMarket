@@ -1,16 +1,17 @@
 "use client"
 
 import { Fragment, useState } from "react"
-import CopyButton from "@/features/master/components/CopyButton"
 import ToggleComunidadButton from "@/features/master/components/ToggleComunidadButton"
 import EditComunidadForm from "@/features/master/components/EditComunidadForm"
+import InviteCodeCell from "@/features/master/components/InviteCodeCell"
 
 type ComunidadTableItem = {
   idcomunidad: number
   nombre: string
   descripcion?: string | null
   slug: string
-  codigoinvitacion: string
+  codigoinvitacion: string | null
+  codigoexpiracion: string | null
   isactive: number
   _count: { miembros: number }
 }
@@ -65,11 +66,12 @@ export default function ComunidadesTable({ comunidades }: ComunidadesTableProps)
                   <p className="font-medium text-gray-800">{comunidad._count.miembros}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-xs uppercase tracking-[0.24em] text-gray-400">Código invitación</p>
-                  <div className="mt-1 flex items-center gap-2">
-                    <span className="font-mono text-xs text-gray-500 break-all">{comunidad.codigoinvitacion}</span>
-                    <CopyButton value={comunidad.codigoinvitacion} />
-                  </div>
+                  <p className="text-xs uppercase tracking-[0.24em] text-gray-400 mb-1">Código invitación</p>
+                  <InviteCodeCell
+                    idcomunidad={comunidad.idcomunidad}
+                    codigoinvitacion={comunidad.codigoinvitacion}
+                    codigoexpiracion={comunidad.codigoexpiracion}
+                  />
                 </div>
               </div>
             </div>
@@ -104,10 +106,11 @@ export default function ComunidadesTable({ comunidades }: ComunidadesTableProps)
                   <td className="px-5 py-4 text-gray-400 font-mono text-xs">{comunidad.slug}</td>
                   <td className="px-5 py-4 text-gray-700">{comunidad._count.miembros}</td>
                   <td className="px-5 py-4">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs text-gray-400 truncate max-w-35">{comunidad.codigoinvitacion}</span>
-                      <CopyButton value={comunidad.codigoinvitacion} />
-                    </div>
+                    <InviteCodeCell
+                      idcomunidad={comunidad.idcomunidad}
+                      codigoinvitacion={comunidad.codigoinvitacion}
+                      codigoexpiracion={comunidad.codigoexpiracion}
+                    />
                   </td>
                   <td className="px-5 py-4">
                     <span

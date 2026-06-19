@@ -2,7 +2,7 @@
 
 import { auth } from "@/server/auth"
 import { redirect } from "next/navigation"
-import { getComunidades, createComunidad, updateComunidad } from "@/server/services/comunidadService"
+import { getComunidades, createComunidad, updateComunidad, generateInviteCode, revokeInviteCode } from "@/server/services/comunidadService"
 import { getAllUsuarios, createUserByMaster, getUserById, updateUser } from "@/server/services/userService"
 import { prisma } from "@/server/db/db"
 import { UpdateUserAdminInput } from "@/types/auth.types"
@@ -114,6 +114,26 @@ export async function createUserMasterAction(data: CreateUserMasterInput) {
   const parsed = createUserMasterSchema.safeParse(data)
   if (!parsed.success) return { error: parsed.error.issues[0].message }
   return createUserByMaster(parsed.data)
+}
+
+// --- Códigos de invitación ---
+
+export async function generateInviteCodeAction(idcomunidad: number, horas: number) {
+  await requireMaster()
+  // cast until `prisma migrate dev` regenerates types with the new nullable fields
+  const result = await generateInviteCode(idcomunidad, horas) as unknown as {
+    codigoinvitacion: string | null
+    codigoexpiracion: Date | null
+  }
+  return {
+    codigoinvitacion: result.codigoinvitacion,
+    codigoexpiracion: result.codigoexpiracion?.toISOString() ?? null,
+  }
+}
+
+export async function revokeInviteCodeAction(idcomunidad: number) {
+  await requireMaster()
+  return revokeInviteCode(idcomunidad)
 }
 
 // --- Perfil master ---

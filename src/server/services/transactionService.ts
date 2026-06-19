@@ -13,6 +13,7 @@ export async function createTransaction(data: {
   preciototal: number
 }) {
   return prisma.transaccion.create({
+    // idcomunidad cast until `prisma migrate dev` regenerates types with the nullable field
     data: {
       idcomprador: data.idcomprador,
       idvendedor: data.idvendedor,
@@ -23,7 +24,7 @@ export async function createTransaction(data: {
       preciototal: data.preciototal,
       fechatransaccion: new Date(),
       isactive: 1,
-    }
+    } as never
   })
 }
 
