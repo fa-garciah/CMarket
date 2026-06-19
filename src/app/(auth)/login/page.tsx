@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { signIn, getSession } from "next-auth/react";
 import { checkUserVerifiedAction } from "@/features/auth/actions";
 import Link from "next/link";
+import Image from "next/image";
 import { useState, Suspense } from "react";
 
 type LoginFormValues = {
