@@ -86,7 +86,7 @@ export default function InteresForm({ idproducto, precio, stock }: Props) {
             min: { value: 1, message: "Mínimo 1" },
             max: { value: stock, message: `Máximo ${stock}` }
           })}
-          className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 focus:bg-white focus:border-[#FF6B00] outline-none transition-all text-gray-700"
+          className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 focus:bg-white focus:border-violet-500 outline-none transition-all text-gray-700"
         />
         {errors.cantidad && (
           <p className="text-red-500 text-xs mt-1">{errors.cantidad.message}</p>
@@ -103,7 +103,7 @@ export default function InteresForm({ idproducto, precio, stock }: Props) {
             valueAsNumber: true,
             validate: (v) => v > 0 || "Selecciona un método de pago"
           })}
-          className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 focus:bg-white focus:border-[#FF6B00] outline-none transition-all text-gray-700"
+          className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 focus:bg-white focus:border-violet-500 outline-none transition-all text-gray-700"
         >
           <option value={0}>Selecciona un método de pago</option>
           {metodosPago.map((m) => (
@@ -120,7 +120,7 @@ export default function InteresForm({ idproducto, precio, stock }: Props) {
       {/* Precio total */}
       <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
         <p className="text-xs text-gray-400 uppercase font-semibold tracking-wide mb-1">Precio por unidad</p>
-        <p className="text-2xl text-[#FF6B00] font-black">
+        <p className="text-2xl text-violet-600 font-black">
           ${precio.toLocaleString('es-MX')}
         </p>
       </div>
@@ -134,7 +134,7 @@ export default function InteresForm({ idproducto, precio, stock }: Props) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-4 bg-[#FF6B00] hover:bg-[#e66000] text-white font-black rounded-xl transition-all shadow-xl disabled:opacity-50"
+        className="w-full py-4 bg-violet-600 hover:bg-violet-700 text-white font-black rounded-xl transition-all shadow-xl disabled:opacity-50"
       >
         {loading ? "ENVIANDO SOLICITUD..." : "CONTACTAR VENDEDOR"}
       </button>
@@ -164,7 +164,7 @@ export default function InteresForm({ idproducto, precio, stock }: Props) {
             <button
               onClick={handleConfirm}
               disabled={loading}
-              className="flex-1 py-3 bg-[#FF6B00] hover:bg-[#e66000] text-white font-semibold rounded-xl transition-all disabled:opacity-50"
+              className="flex-1 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
             >
               {loading ? "Enviando..." : "Confirmar"}
             </button>

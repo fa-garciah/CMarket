@@ -1,5 +1,13 @@
 import { prisma } from "@/server/db/db"
 
+export async function getComunidadesAprobadasByUser(idusuario: number) {
+  const rows = await prisma.membresiaComunidad.findMany({
+    where: { idusuario, estado: "APROBADA" },
+    select: { comunidad: { select: { idcomunidad: true, nombre: true, slug: true } } },
+  })
+  return rows.map((r) => r.comunidad)
+}
+
 export async function getMembresiasByUser(idusuario: number) {
   return prisma.membresiaComunidad.findMany({
     where: { idusuario },

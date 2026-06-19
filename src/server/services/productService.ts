@@ -98,6 +98,21 @@ export async function updateProduct(
   })
 }
 
+export async function getPublicacionesByProducto(idproducto: number) {
+  return prisma.publicacionProducto.findMany({
+    where: { idproducto },
+    select: { idcomunidad: true, isactive: true },
+  })
+}
+
+export async function upsertPublicacion(idproducto: number, idcomunidad: number, isactive: 0 | 1) {
+  return prisma.publicacionProducto.upsert({
+    where: { idproducto_idcomunidad: { idproducto, idcomunidad } },
+    create: { idproducto, idcomunidad, isactive },
+    update: { isactive },
+  })
+}
+
 export async function createProduct(data: CreateProductDTO) {
   return prisma.producto.create({
     data: {

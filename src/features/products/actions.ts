@@ -4,7 +4,8 @@ import { auth } from "@/server/auth"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import { createTransaction, getMetodosPago, updateTransactionStatus, getTransactionById } from "@/server/services/transactionService"
-import { getProductById, createProduct, getProductForEdit, updateProduct } from "@/server/services/productService"
+import { getProductById, createProduct, getProductForEdit, updateProduct, upsertPublicacion } from "@/server/services/productService"
+import { getMembresiaByUserAndComunidad } from "@/server/services/membresiaService"
 import { createTransactionSchema, CreateTransactionInput } from "@/types/transaction.types"
 import type { CreateProductDTO } from "@/types/product.types"
 
@@ -47,6 +48,35 @@ export async function updateProductAction(
   } catch {
     return { error: "Error al actualizar el producto" }
   }
+}
+
+export async function publishToComAction(idproducto: number, idcomunidad: number) {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/login")
+
+  const producto = await getProductForEdit(idproducto)
+  if (!producto) return { error: "Producto no encontrado" }
+  if (producto.idusuario !== Number(session.user.id)) return { error: "No tienes permiso" }
+
+  const membresia = await getMembresiaByUserAndComunidad(Number(session.user.id), idcomunidad)
+  if (!membresia || membresia.estado !== "APROBADA") return { error: "No eres miembro de esta comunidad" }
+
+  await upsertPublicacion(idproducto, idcomunidad, 1)
+  revalidatePath("/comunidad", "layout")
+  return { ok: true }
+}
+
+export async function unpublishFromComAction(idproducto: number, idcomunidad: number) {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/login")
+
+  const producto = await getProductForEdit(idproducto)
+  if (!producto) return { error: "Producto no encontrado" }
+  if (producto.idusuario !== Number(session.user.id)) return { error: "No tienes permiso" }
+
+  await upsertPublicacion(idproducto, idcomunidad, 0)
+  revalidatePath("/comunidad", "layout")
+  return { ok: true }
 }
 
 export async function getMetodosPagoAction() {
