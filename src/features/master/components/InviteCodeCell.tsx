@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { generateInviteCodeAction, revokeInviteCodeAction } from "@/features/master/actions"
 import CopyButton from "@/features/master/components/CopyButton"
-import { RefreshCw, X, Link2 } from "lucide-react"
+import { RefreshCw, X } from "lucide-react"
 
 const DURACIONES = [
   { label: "1 hora",   horas: 1 },
@@ -52,18 +52,12 @@ export default function InviteCodeCell({ idcomunidad, codigoinvitacion, codigoex
     setLoading(false)
   }
 
-  const inviteUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/unirse/${codigo}`
-      : `/unirse/${codigo}`
-
   if (isActive) {
     return (
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center gap-2">
-          <Link2 size={12} className="text-violet-400 shrink-0" />
-          <span className="font-mono text-xs text-gray-500 truncate max-w-[120px]">{codigo}</span>
-          <CopyButton value={inviteUrl} />
+          <span className="font-mono text-xs text-gray-500 truncate max-w-30">{codigo}</span>
+          <CopyButton value={codigo!} />
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[11px] text-emerald-600 font-medium">

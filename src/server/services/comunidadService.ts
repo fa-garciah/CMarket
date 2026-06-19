@@ -83,6 +83,30 @@ export async function revokeInviteCode(idcomunidad: number) {
   return { ok: true };
 }
 
+export async function getProductosByComunidad(idcomunidad: number) {
+  const publicaciones = await prisma.producto.findMany({
+    where: {
+      isactive: 1,
+      publicaciones: { some: { idcomunidad, isactive: 1 } },
+    },
+    select: {
+      idproducto: true,
+      nombreproducto: true,
+      precio: true,
+      fotoproducto: true,
+      fotourl: true,
+      vendedor: { select: { nombre: true } },
+      categoria: { select: { nombrecategoria: true } },
+    },
+    orderBy: { fechapublicacion: "desc" },
+  })
+  return publicaciones.map((p) => ({
+    ...p,
+    precio: Number(p.precio),
+    fotoproducto: !!p.fotoproducto,
+  }))
+}
+
 export async function getComunidadByCodigoInvitacion(codigo: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (prisma as any).comunidad.findUnique({
