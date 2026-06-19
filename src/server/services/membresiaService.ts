@@ -24,6 +24,34 @@ export async function getMembresiaByUserAndComunidad(idusuario: number, idcomuni
   })
 }
 
+export async function getMembresiaById(idmembresia: number) {
+  return prisma.membresiaComunidad.findUnique({
+    where: { idmembresia },
+    select: { idcomunidad: true, idusuario: true, rol: true, estado: true },
+  })
+}
+
+export async function getMiembrosByComunidad(idcomunidad: number) {
+  return prisma.membresiaComunidad.findMany({
+    where: { idcomunidad },
+    include: {
+      usuario: { select: { idusuario: true, nombre: true, correo: true } },
+    },
+    orderBy: { fechacreacion: "asc" },
+  })
+}
+
+export async function updateMembresiaEstado(
+  idmembresia: number,
+  estado: "APROBADA" | "RECHAZADA" | "BLOQUEADA" | "PENDIENTE",
+) {
+  await prisma.membresiaComunidad.update({
+    where: { idmembresia },
+    data: { estado },
+  })
+  return { ok: true }
+}
+
 export async function solicitarUnirse(idusuario: number, idcomunidad: number) {
   const existing = await getMembresiaByUserAndComunidad(idusuario, idcomunidad)
 

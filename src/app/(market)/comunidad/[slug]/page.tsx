@@ -94,6 +94,7 @@ export default async function ComunidadPage({ params }: Props) {
 type ComunidadInfo = {
   idcomunidad: number
   nombre: string
+  slug: string
   descripcion: string | null
   _count: { miembros: number }
 }
@@ -122,10 +123,13 @@ function PageWrapper({
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-black tracking-tight text-gray-900">{comunidad.nombre}</h1>
                 {isAdmin && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-violet-50 border border-violet-200 px-2.5 py-0.5 text-[11px] font-semibold text-violet-700">
+                  <a
+                    href={`/comunidad/${comunidad.slug ?? ""}/admin`}
+                    className="inline-flex items-center gap-1 rounded-full bg-violet-50 border border-violet-200 px-2.5 py-0.5 text-[11px] font-semibold text-violet-700 hover:bg-violet-100 transition-colors"
+                  >
                     <Crown size={10} />
                     Admin
-                  </span>
+                  </a>
                 )}
               </div>
               {comunidad.descripcion && (
