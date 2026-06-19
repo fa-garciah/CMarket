@@ -88,6 +88,7 @@ export async function getProductosByComunidad(idcomunidad: number) {
     where: {
       isactive: 1,
       publicaciones: { some: { idcomunidad, isactive: 1 } },
+      NOT: { disponibilidad: { nombredisponibilidad: "Agotado" } },
     },
     select: {
       idproducto: true,
@@ -97,14 +98,21 @@ export async function getProductosByComunidad(idcomunidad: number) {
       fotourl: true,
       vendedor: { select: { nombre: true } },
       categoria: { select: { nombrecategoria: true } },
+      disponibilidad: { select: { nombredisponibilidad: true } },
     },
     orderBy: { fechapublicacion: "desc" },
   })
-  return publicaciones.map((p) => ({
-    ...p,
-    precio: Number(p.precio),
-    fotoproducto: !!p.fotoproducto,
-  }))
+  return publicaciones
+    .filter((p) => p.disponibilidad.nombredisponibilidad.toLowerCase() !== "agotado")
+    .map((p) => ({
+      idproducto:     p.idproducto,
+      nombreproducto: p.nombreproducto,
+      precio:         Number(p.precio),
+      fotoproducto:   !!p.fotoproducto,
+      fotourl:        p.fotourl,
+      vendedor:       p.vendedor,
+      categoria:      p.categoria,
+    }))
 }
 
 export async function getComunidadByCodigoInvitacion(codigo: string) {

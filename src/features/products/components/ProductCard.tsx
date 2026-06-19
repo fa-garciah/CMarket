@@ -1,7 +1,7 @@
 import Link from "next/link"
 import type { ProductCardDTO } from "@/types/product.types"
 
-export default function ProductCard({ idproducto, nombreproducto, precio, fotoproducto, fotourl, vendedor }: ProductCardDTO) {
+export default function ProductCard({ idproducto, nombreproducto, precio, fotoproducto, fotourl, vendedor, hideVerMas }: ProductCardDTO & { hideVerMas?: boolean }) {
   const imageSrc = fotourl
     ? fotourl
     : fotoproducto
@@ -32,7 +32,9 @@ export default function ProductCard({ idproducto, nombreproducto, precio, fotopr
           <p className="mt-1.5 line-clamp-2 text-sm font-semibold text-gray-800">{nombreproducto}</p>
           <div className="mt-3 flex items-end justify-between gap-2">
             <p className="text-lg font-black text-violet-600">${precio.toLocaleString('es-MX')}</p>
-            <span className="rounded-full bg-violet-50 border border-violet-100 px-2.5 py-1 text-[10px] uppercase tracking-widest text-violet-600 font-medium">Ver más</span>
+            {!hideVerMas && (
+              <span className="rounded-full bg-violet-50 border border-violet-100 px-2.5 py-1 text-[10px] uppercase tracking-widest text-violet-600 font-medium">Ver más</span>
+            )}
           </div>
         </div>
       </article>

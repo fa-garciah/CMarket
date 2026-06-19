@@ -2,8 +2,9 @@
 
 import { auth } from "@/server/auth"
 import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
 import { createTransaction, getMetodosPago, updateTransactionStatus, getTransactionById } from "@/server/services/transactionService"
-import { getProductById, createProduct } from "@/server/services/productService"
+import { getProductById, createProduct, getProductForEdit, updateProduct } from "@/server/services/productService"
 import { createTransactionSchema, CreateTransactionInput } from "@/types/transaction.types"
 import type { CreateProductDTO } from "@/types/product.types"
 
@@ -17,6 +18,34 @@ export async function createProductAction(data: CreateProductDTO) {
   } catch (error) {
     console.error("[createProduct] Error:", error)
     return { error: "Error al publicar el producto" }
+  }
+}
+
+export async function updateProductAction(
+  idproducto: number,
+  data: {
+    nombreproducto: string
+    descripcion: string
+    idcategoria: number
+    iddisponibilidad: number
+    precio: number
+    stock: number
+    imageUrl?: string
+  },
+) {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/login")
+
+  const producto = await getProductForEdit(idproducto)
+  if (!producto) return { error: "Producto no encontrado" }
+  if (producto.idusuario !== Number(session.user.id)) return { error: "No tienes permiso para editar este producto" }
+
+  try {
+    await updateProduct(idproducto, data)
+    revalidatePath("/profile")
+    return { ok: true }
+  } catch {
+    return { error: "Error al actualizar el producto" }
   }
 }
 
