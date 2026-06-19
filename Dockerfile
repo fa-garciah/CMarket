@@ -30,4 +30,4 @@ RUN --mount=type=secret,id=BELLA_BAXTER_API_KEY \
 
 EXPOSE 3000
 
-CMD ["bella", "run", "--", "sh", "-c", "npx prisma db push && npx prisma db seed && npm start"]
+CMD ["bella", "run", "--", "sh", "-c", "npx prisma db push --accept-data-loss && npx prisma db seed && npm start"]
